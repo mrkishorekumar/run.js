@@ -9,14 +9,22 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        borderColor: "#4c4d4f"
+        borderColor: "#4c4d4f",
+        blue: "#0556f3",
       },
       backgroundColor: {
-        headerBg: "#1F2023",
+        headerBg: "#1f2023",
+        navbarBg: "#2d2f34",
+        ideBg: "#1E1E1E",
+        outputBg: "#242424",
+        blueBtn: "#0556f3",
       },
       height: {
-        '12vh': '12vh',
-      }
+        "12vh": "12vh",
+        "7vh": "7vh",
+        "88vh": "88vh",
+        "81vh": "81vh",
+      },
     },
   },
   plugins: [],
