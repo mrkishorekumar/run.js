@@ -1,8 +1,11 @@
+import PlaygroundHeader from '@/components/PlaygroundHeader'
 import React from 'react'
 
 function Home() {
   return (
-    <div>Home</div>
+    <>
+      <PlaygroundHeader />
+    </>
   )
 }
 
