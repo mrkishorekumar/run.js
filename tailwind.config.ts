@@ -18,6 +18,7 @@ const config: Config = {
         ideBg: "#1E1E1E",
         outputBg: "#242424",
         blueBtn: "#0556f3",
+        modalBg: "#2D2F34",
       },
       height: {
         "12vh": "12vh",

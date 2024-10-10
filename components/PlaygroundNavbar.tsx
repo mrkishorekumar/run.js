@@ -11,6 +11,7 @@ interface PlaygroundNavbarProps {
   toggleFullScreen?: () => void;
   toggleLangFunction?: () => void;
   lang?: boolean;
+  openHelpModal?: () => void;
 }
 
 function PlaygroundNavbar({
@@ -24,6 +25,7 @@ function PlaygroundNavbar({
   toggleFullScreen,
   toggleLangFunction,
   lang,
+  openHelpModal,
 }: PlaygroundNavbarProps) {
   return (
     <nav className="h-7vh w-full flex items-center bg-navbarBg">
@@ -216,7 +218,10 @@ function PlaygroundNavbar({
               </p>
             </div>
             <div className="h-full flex justify-center items-center gap-4">
-              <button className="bg-transparent p-1 border border-borderColor rounded">
+              <button
+                className="bg-transparent p-1 border border-borderColor rounded"
+                onClick={() => (openHelpModal ? openHelpModal() : undefined)}
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   height="24px"

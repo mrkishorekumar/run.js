@@ -1,5 +1,6 @@
 "use client";
 
+import HelpModal from "@/components/HelpModal";
 import PlaygroundHeader from "@/components/PlaygroundHeader";
 import PlaygroundNavbar from "@/components/PlaygroundNavbar";
 import useAdjustFontSize from "@/hooks/useAdjustFontSize";
@@ -41,6 +42,7 @@ console.log(message);
   const [logs, setLogs] = useState<Message[] | any[]>([]);
   const [fullScreen, setFullScreen] = useState(false);
   const [lang, setLang] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   function toggleLangFunction() {
     setLang((prev) => !prev);
@@ -159,6 +161,7 @@ console.log(message);
             fullScreen={fullScreen}
             codeOption={false}
             clearAllConsoleLogs={clearAllConsoleLogs}
+            openHelpModal={() => setIsModalOpen(true)}
           />
           <div
             className={`${fullScreen ? "h-86vh" : "h-81vh"} w-full p-2 bg-outputBg overflow-auto`}
@@ -171,6 +174,10 @@ console.log(message);
           </div>
         </section>
       </Split>
+      <HelpModal
+        isModalOpen={isModalOpen}
+        close={() => setIsModalOpen(false)}
+      />
     </>
   );
 }
