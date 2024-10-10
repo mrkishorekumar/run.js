@@ -108,9 +108,12 @@ console.log("Try RunJs.in");
               theme={"vs-dark"}
               language={"javascript"}
               value={javascriptCode}
-              beforeMount={(monaco) => emmetJSX(monaco, ["javascript"])}
+              beforeMount={(monaco) => {
+                emmetJSX(monaco, ["javascript"])
+                monaco.languages.typescript.javascriptDefaults.setEagerModelSync(true);
+              }}
               onChange={(value) => setJavascriptCode(value)}
-              options={{ fontSize: fontSize }}
+              options={{ fontSize: fontSize, cursorStyle: "block", language: "javascript" }}
             />
           </section>
         </section>
