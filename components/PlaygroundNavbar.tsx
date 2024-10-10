@@ -7,6 +7,8 @@ interface PlaygroundNavbarProps {
   clearAllConsoleLogs?: () => void;
   increaseFontSize?: () => void;
   decreaseFontSize?: () => void;
+  fullScreen: boolean;
+  toggleFullScreen?: () => void;
 }
 
 function PlaygroundNavbar({
@@ -16,6 +18,8 @@ function PlaygroundNavbar({
   clearAllConsoleLogs,
   increaseFontSize,
   decreaseFontSize,
+  fullScreen,
+  toggleFullScreen,
 }: PlaygroundNavbarProps) {
   return (
     <nav className="h-7vh w-full flex items-center bg-navbarBg">
@@ -56,16 +60,33 @@ function PlaygroundNavbar({
                   <path d="M440-520h80v-280q0-17-11.5-28.5T480-840q-17 0-28.5 11.5T440-800v280ZM200-360h560v-80H200v80Zm-58 240h98v-80q0-17 11.5-28.5T280-240q17 0 28.5 11.5T320-200v80h120v-80q0-17 11.5-28.5T480-240q17 0 28.5 11.5T520-200v80h120v-80q0-17 11.5-28.5T680-240q17 0 28.5 11.5T720-200v80h98l-40-160H182l-40 160Zm676 80H142q-39 0-63-31t-14-69l55-220v-80q0-33 23.5-56.5T200-520h160v-280q0-50 35-85t85-35q50 0 85 35t35 85v280h160q33 0 56.5 23.5T840-440v80l55 220q13 38-11.5 69T818-40Zm-58-400H200h560Zm-240-80h-80 80Z" />
                 </svg>{" "}
               </button>
-              <button className="bg-transparent p-1 border border-borderColor rounded">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  height="24px"
-                  viewBox="0 -960 960 960"
-                  width="24px"
-                  fill="#FFFFFF"
-                >
-                  <path d="M120-120v-200h80v120h120v80H120Zm520 0v-80h120v-120h80v200H640ZM120-640v-200h200v80H200v120h-80Zm640 0v-120H640v-80h200v200h-80Z" />
-                </svg>
+              <button
+                className="bg-transparent p-1 border border-borderColor rounded"
+                onClick={() =>
+                  toggleFullScreen ? toggleFullScreen() : undefined
+                }
+              >
+                {fullScreen ? (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    height="24px"
+                    viewBox="0 -960 960 960"
+                    width="24px"
+                    fill="#FFFFFF"
+                  >
+                    <path d="m136-80-56-56 264-264H160v-80h320v320h-80v-184L136-80Zm344-400v-320h80v184l264-264 56 56-264 264h184v80H480Z" />
+                  </svg>
+                ) : (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    height="24px"
+                    viewBox="0 -960 960 960"
+                    width="24px"
+                    fill="#FFFFFF"
+                  >
+                    <path d="M120-120v-200h80v120h120v80H120Zm520 0v-80h120v-120h80v200H640ZM120-640v-200h200v80H200v120h-80Zm640 0v-120H640v-80h200v200h-80Z" />
+                  </svg>
+                )}
               </button>
               <button
                 className="bg-transparent p-1 border border-borderColor rounded"

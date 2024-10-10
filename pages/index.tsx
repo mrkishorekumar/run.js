@@ -23,7 +23,13 @@ console.log("Try RunJs.in");
     `,
   );
   const [fontSize, setFontSize] = useLocalStorageState("font", 16);
+  {/* "@ts-expect-error" */ }
   const [logs, setLogs] = useState<Message[] | any[]>([]);
+  const [fullScreen, setFullScreen] = useState(false);
+
+  function toggleFullScreen() {
+    setFullScreen((prev) => !prev);
+  }
 
   function captureConsoleFunction() {
     const hookedConsole = Hook(
@@ -72,17 +78,22 @@ console.log("Try RunJs.in");
 
   return (
     <>
-      <PlaygroundHeader />
-      <Split className="split h-88vh w-full flex flex-row" minSize={500}>
-        <section className="bg-ideBg 88vh w-full">
+      <PlaygroundHeader fullScreen={fullScreen} />
+      <Split
+        className={`split h-${fullScreen ? "93" : "88"}vh w-full flex flex-row`}
+        minSize={500}
+      >
+        <section className="bg-ideBg w-full">
           <PlaygroundNavbar
+            fullScreen={fullScreen}
             increaseFontSize={increaseFontSize}
             decreaseFontSize={decreaseFontSize}
             codeOption={true}
             handleRunClick={handleRunClick}
             formatCodeFunction={formatCodeFunction}
+            toggleFullScreen={toggleFullScreen}
           />
-          <section className="h-81vh w-full">
+          <section className={`${fullScreen ? "h-86vh" : "h-81vh"} w-full`}>
             <Editor
               height="100%"
               theme={"vs-dark"}
@@ -96,10 +107,13 @@ console.log("Try RunJs.in");
         </section>
         <section className="bg-outputBg">
           <PlaygroundNavbar
+            fullScreen={fullScreen}
             codeOption={false}
             clearAllConsoleLogs={clearAllConsoleLogs}
           />
-          <div className="h-81vh w-full p-2 bg-outputBg overflow-auto">
+          <div
+            className={`${fullScreen ? "h-86vh" : "h-81vh"} w-full p-2 bg-outputBg overflow-auto`}
+          >
             <Console
               logs={logs}
               variant="dark"
