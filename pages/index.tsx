@@ -26,9 +26,7 @@ console.log("Try RunJs.in");
     `,
   );
   const [fontSize, setFontSize] = useLocalStorageState("font", 16);
-  {
-    /* "@ts-expect-error" */
-  }
+  /* eslint-disable  @typescript-eslint/no-explicit-any */
   const [logs, setLogs] = useState<Message[] | any[]>([]);
   const [fullScreen, setFullScreen] = useState(false);
 
