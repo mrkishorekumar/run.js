@@ -2,7 +2,10 @@
 
 import PlaygroundHeader from "@/components/PlaygroundHeader";
 import PlaygroundNavbar from "@/components/PlaygroundNavbar";
+import useAdjustFontSize from "@/hooks/useAdjustFontSize";
+import useComplieCode from "@/hooks/useComplieCode";
 import useLocalStorageState from "@/hooks/useLocalStorageState";
+import useSaveFileShortcut from "@/hooks/useSaveFileShortcut";
 import { consoleTheme } from "@/utils/consoleTheme";
 import { onFormatClick } from "@/utils/onFormatClick";
 import { Editor } from "@monaco-editor/react";
@@ -23,7 +26,9 @@ console.log("Try RunJs.in");
     `,
   );
   const [fontSize, setFontSize] = useLocalStorageState("font", 16);
-  {/* "@ts-expect-error" */ }
+  {
+    /* "@ts-expect-error" */
+  }
   const [logs, setLogs] = useState<Message[] | any[]>([]);
   const [fullScreen, setFullScreen] = useState(false);
 
@@ -75,6 +80,10 @@ console.log("Try RunJs.in");
   const decreaseFontSize = () => {
     setFontSize(parseInt(fontSize) - 2);
   };
+
+  useAdjustFontSize(increaseFontSize, decreaseFontSize);
+  useSaveFileShortcut(javascriptCode);
+  useComplieCode(handleRunClick);
 
   return (
     <>
