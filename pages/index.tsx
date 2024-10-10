@@ -139,7 +139,11 @@ console.log(message);
               }}
               onChange={(value) => {
                 if (value) {
-                  lang ? setJavascriptCode(value) : setTypescriptCode(value);
+                  if (lang) {
+                    setJavascriptCode(value);
+                  } else {
+                    setTypescriptCode(value);
+                  }
                 }
               }}
               options={{
