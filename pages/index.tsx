@@ -14,6 +14,7 @@ import { Message } from "console-feed/lib/definitions/Component";
 import { emmetJSX } from "emmet-monaco-es";
 import React, { useEffect, useState } from "react";
 import Split from "react-split";
+import * as ts from "typescript";
 
 function Home() {
   const [javascriptCode, setJavascriptCode] = useLocalStorageState(
@@ -25,10 +26,25 @@ function Home() {
 console.log("Try RunJs.in");
     `,
   );
+  const [typescriptCode, setTypescriptCode] = useLocalStorageState(
+    "tscode",
+    `
+// Free Online Typescript Complier
+// Write, Edit and Run your Typescript code using TS Online Compiler
+
+const message:string = "Try RunJs.in";
+console.log(message);
+    `,
+  );
   const [fontSize, setFontSize] = useLocalStorageState("font", 16);
   /* eslint-disable  @typescript-eslint/no-explicit-any */
   const [logs, setLogs] = useState<Message[] | any[]>([]);
   const [fullScreen, setFullScreen] = useState(false);
+  const [lang, setLang] = useState(true);
+
+  function toggleLangFunction() {
+    setLang((prev) => !prev);
+  }
 
   function toggleFullScreen() {
     setFullScreen((prev) => !prev);
@@ -64,7 +80,7 @@ console.log("Try RunJs.in");
     clearAllConsoleLogs();
     const code = await formatCodeFunction();
     try {
-      const func = new Function(code);
+      const func = new Function(lang ? code : compileCode());
       return func();
     } catch (error) {
       console.log(error);
@@ -77,6 +93,13 @@ console.log("Try RunJs.in");
 
   const decreaseFontSize = () => {
     setFontSize(parseInt(fontSize) - 2);
+  };
+
+  const compileCode = () => {
+    const result = ts.transpileModule(typescriptCode, {
+      compilerOptions: { module: ts.ModuleKind.CommonJS },
+    });
+    return result.outputText;
   };
 
   useAdjustFontSize(increaseFontSize, decreaseFontSize);
@@ -92,6 +115,8 @@ console.log("Try RunJs.in");
       >
         <section className="bg-ideBg w-full">
           <PlaygroundNavbar
+            lang={lang}
+            toggleLangFunction={toggleLangFunction}
             fullScreen={fullScreen}
             increaseFontSize={increaseFontSize}
             decreaseFontSize={decreaseFontSize}
@@ -104,19 +129,23 @@ console.log("Try RunJs.in");
             <Editor
               height="100%"
               theme={"vs-dark"}
-              language={"javascript"}
-              value={javascriptCode}
+              language={lang ? "javascript" : "typescript"}
+              value={lang ? javascriptCode : typescriptCode}
               beforeMount={(monaco) => {
-                emmetJSX(monaco, ["javascript"]);
+                emmetJSX(monaco, lang ? ["javascript"] : ["typescript"]);
                 monaco.languages.typescript.javascriptDefaults.setEagerModelSync(
                   true,
                 );
               }}
-              onChange={(value) => setJavascriptCode(value)}
+              onChange={(value) => {
+                if (value) {
+                  lang ? setJavascriptCode(value) : setTypescriptCode(value);
+                }
+              }}
               options={{
                 fontSize: fontSize,
                 cursorStyle: "block",
-                language: "javascript",
+                language: lang ? "javascript" : "typescript",
               }}
             />
           </section>
