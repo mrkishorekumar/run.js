@@ -81,7 +81,7 @@ console.log("Try RunJs.in");
       <PlaygroundHeader fullScreen={fullScreen} />
       <Split
         className={`split h-${fullScreen ? "93" : "88"}vh w-full flex flex-row`}
-        minSize={500}
+        minSize={550}
       >
         <section className="bg-ideBg w-full">
           <PlaygroundNavbar
