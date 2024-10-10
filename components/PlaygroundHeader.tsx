@@ -18,7 +18,7 @@ function PlaygroundHeader({ fullScreen }: PlaygroundHeaderProps) {
         </h5>
       </div>
       <button
-        className={`bg-transparent text-white font-semibold py-${fullScreen ? "1" : "2"} px-3 border border-white rounded flex flex-row items-center`}
+        className={`bg-transparent text-white font-semibold ${fullScreen ? "py-1" : "py-2"} px-3 border border-white rounded flex flex-row items-center`}
       >
         RunJs Pro
         <svg
