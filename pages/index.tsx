@@ -41,10 +41,19 @@ console.log("Try RunJs.in");
     };
   }, []);
 
-  const handleRunClick = async () => {
+  async function formatCodeFunction() {
     const code = await onFormatClick(javascriptCode);
-    setLogs([]);
     setJavascriptCode(code);
+    return code;
+  }
+
+  function clearAllConsoleLogs() {
+    setLogs([]);
+  }
+
+  const handleRunClick = async () => {
+    clearAllConsoleLogs();
+    const code = await formatCodeFunction();
     try {
       const func = new Function(code);
       return func();
@@ -53,12 +62,26 @@ console.log("Try RunJs.in");
     }
   };
 
+  const increaseFontSize = () => {
+    setFontSize(parseInt(fontSize) + 1);
+  };
+
+  const decreaseFontSize = () => {
+    setFontSize(parseInt(fontSize) - 2);
+  };
+
   return (
     <>
       <PlaygroundHeader />
       <Split className="split h-88vh w-full flex flex-row" minSize={500}>
         <section className="bg-ideBg 88vh w-full">
-          <PlaygroundNavbar codeOption={true} handleRunClick={handleRunClick} />
+          <PlaygroundNavbar
+            increaseFontSize={increaseFontSize}
+            decreaseFontSize={decreaseFontSize}
+            codeOption={true}
+            handleRunClick={handleRunClick}
+            formatCodeFunction={formatCodeFunction}
+          />
           <section className="h-81vh w-full">
             <Editor
               height="100%"
@@ -72,7 +95,10 @@ console.log("Try RunJs.in");
           </section>
         </section>
         <section className="bg-outputBg">
-          <PlaygroundNavbar codeOption={false} />
+          <PlaygroundNavbar
+            codeOption={false}
+            clearAllConsoleLogs={clearAllConsoleLogs}
+          />
           <div className="h-81vh w-full p-2 bg-outputBg overflow-auto">
             <Console
               logs={logs}
