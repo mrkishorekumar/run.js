@@ -28,6 +28,7 @@ const config: Config = {
         "93vh": "93vh",
         "86vh": "86vh",
         "100vh": "100vh",
+        "92p": "92%",
       },
     },
   },
