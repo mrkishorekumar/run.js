@@ -134,9 +134,6 @@ function Privacypolicy() {
           Collecting and Using Your Personal Data
         </h2>
         <h3 className="font-semibold text-xl my-4">Types of Data Collected</h3>
-        <h4 className="font-semibold text-lg my-4">
-          PclassName='font-semibold text-xl my-4'ersonal Data
-        </h4>
         <p>
           While using Our Service, We may ask You to provide Us with certain
           personally identifiable information that can be used to contact or
