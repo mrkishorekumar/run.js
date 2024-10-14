@@ -3,6 +3,20 @@
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useAuth } from "./AuthProvider";
+import Loading from "./Loading";
+
+const loadingMessages = [
+  "Loading, please wait...",
+  "Hang tight! We're fetching your data.",
+  "Just a moment! We're getting things ready for you.",
+  "Please wait a moment while we load your content.",
+  "Almost there! We're preparing everything you need.",
+  "Loading your experience...",
+  "Hang in there! Just a few seconds more...",
+  "We're working on it! Your content will be here shortly.",
+  "Loading... Good things come to those who wait!",
+  "Fetching data... This won't take long!",
+];
 
 type ProtectedRouteProps = Record<string, unknown>;
 type PublicRouteProps = Record<string, unknown>;
@@ -15,8 +29,13 @@ export function withPublic<P extends PublicRouteProps>(
     const { user } = useAuth();
     const router = useRouter();
     const [loading, setLoading] = useState(true);
+    const [loadingMessage, setLoadingMessage] = useState("");
 
     useEffect(() => {
+      const randomMessage =
+        loadingMessages[Math.floor(Math.random() * loadingMessages.length)];
+      setLoadingMessage(randomMessage);
+
       if (user === undefined) {
         setLoading(true);
       } else if (!user?.uid) {
@@ -27,7 +46,7 @@ export function withPublic<P extends PublicRouteProps>(
     }, [user, router]);
 
     if (loading) {
-      return <h1>Loading...</h1>;
+      return <Loading randomMessage={loadingMessage} />;
     }
 
     return <Component {...props} />;
@@ -42,8 +61,13 @@ export function withProtected<P extends ProtectedRouteProps>(
     const { user } = useAuth();
     const router = useRouter();
     const [loading, setLoading] = useState(true);
+    const [loadingMessage, setLoadingMessage] = useState("");
 
     useEffect(() => {
+      const randomMessage =
+        loadingMessages[Math.floor(Math.random() * loadingMessages.length)];
+      setLoadingMessage(randomMessage);
+
       if (user === undefined) {
         setLoading(true);
       } else if (!user?.uid) {
@@ -54,7 +78,7 @@ export function withProtected<P extends ProtectedRouteProps>(
     }, [user, router]);
 
     if (loading) {
-      return <h1>Loading...</h1>;
+      return <Loading randomMessage={loadingMessage} />;
     }
 
     return <Component {...props} />;

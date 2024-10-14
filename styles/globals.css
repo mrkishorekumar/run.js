@@ -41,3 +41,18 @@
 .no-select {
   user-select: none;
 }
+
+/* Slow bounce animation */
+@keyframes slow-bounce {
+  0%,
+  100% {
+    transform: translateY(0); /* Start and end at the original position */
+  }
+  50% {
+    transform: translateY(-20px); /* Move up by 20 pixels at 50% */
+  }
+}
+
+.animate-slow-bounce {
+  animation: slow-bounce 1.5s ease-in-out infinite; /* 2 seconds duration */
+}
