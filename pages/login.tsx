@@ -1,9 +1,12 @@
+import { withPublic } from "@/components/Router";
 import { signInWithGooglePopup } from "@/firebase";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import React from "react";
 import { Bounce, toast, ToastContainer } from "react-toastify";
 
 function Login() {
+  const router = useRouter();
   const handleGoogleLogin = async () => {
     const id = toast.loading("Connecting to Google, hold tight...");
     try {
@@ -13,6 +16,7 @@ function Login() {
         type: "success",
         isLoading: false,
       });
+      router.replace("/playground");
     } catch {
       toast.update(id, {
         render: "Login failed. Please check your credentials and try again.",
@@ -96,4 +100,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default withPublic(Login);
