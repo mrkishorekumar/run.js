@@ -5,7 +5,7 @@ function PlaygroundTable() {
     <table className="w-full text-sm text-left rtl:text-right text-gray-500">
       <thead className="text-base text-white bg-headerBg sticky top-0 border-b-2 border-borderColor">
         <tr>
-          <th scope="col" className="px-6 py-3">
+          <th scope="col" className="pl-6 py-3">
             Language
           </th>
           <th scope="col" className="px-6 py-3">
@@ -14,14 +14,14 @@ function PlaygroundTable() {
           <th scope="col" className="px-6 py-3">
             Last modified
           </th>
-          <th scope="col" className="px-6 py-3">
+          <th scope="col" className="px-1 py-3">
             Action
           </th>
         </tr>
       </thead>
       <tbody>
         <tr className="border-b border-borderColor text-white hover:cursor-pointer">
-          <th scope="row" className="px-6 py-4">
+          <th scope="row" className="pl-6 py-4">
             {true ? (
               <svg
                 xmlns="http://www.w3.org/2000/svg"
