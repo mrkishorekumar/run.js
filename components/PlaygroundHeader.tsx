@@ -1,10 +1,15 @@
 import React, { memo } from "react";
+import DropDown from "./DropDown";
+import { useAuth } from "./AuthProvider";
+import Link from "next/link";
 
 interface PlaygroundHeaderProps {
   fullScreen: boolean;
 }
 
 function PlaygroundHeader({ fullScreen }: PlaygroundHeaderProps) {
+  const { user } = useAuth();
+
   return (
     <header
       className={`${fullScreen ? "h-7vh" : "h-12vh"} bg-headerBg border-b-2 border-borderColor w-full px-14 flex items-center justify-between`}
@@ -17,20 +22,25 @@ function PlaygroundHeader({ fullScreen }: PlaygroundHeaderProps) {
           Free Online Javascript Complier
         </h5>
       </div>
-      <button
-        className={`bg-transparent text-white font-semibold ${fullScreen ? "py-1" : "py-2"} px-3 border border-white rounded flex flex-row items-center`}
-      >
-        RunJs Pro
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          height="18px"
-          viewBox="0 -960 960 960"
-          width="18px"
-          fill="#FFFFFF"
+      {!user?.uid ? (
+        <Link
+          href={"/login"}
+          className={`bg-transparent text-white font-semibold ${fullScreen ? "py-1" : "py-2"} px-3 border border-white rounded flex flex-row items-center`}
         >
-          <path d="m321-80-71-71 329-329-329-329 71-71 400 400L321-80Z" />
-        </svg>
-      </button>
+          Log In to RunJs
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            height="18px"
+            viewBox="0 -960 960 960"
+            width="18px"
+            fill="#FFFFFF"
+          >
+            <path d="m321-80-71-71 329-329-329-329 71-71 400 400L321-80Z" />
+          </svg>
+        </Link>
+      ) : (
+        <DropDown />
+      )}
     </header>
   );
 }
