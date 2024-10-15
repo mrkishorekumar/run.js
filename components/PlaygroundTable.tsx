@@ -2,9 +2,13 @@ import React from "react";
 
 interface PlaygroundTableProp {
   setRenameModal: React.Dispatch<React.SetStateAction<string>>;
+  setShareModal: React.Dispatch<React.SetStateAction<string>>;
 }
 
-function PlaygroundTable({ setRenameModal }: PlaygroundTableProp) {
+function PlaygroundTable({
+  setRenameModal,
+  setShareModal,
+}: PlaygroundTableProp) {
   const saveFile = (
     javascriptCode: string,
     fileName: string,
@@ -75,7 +79,10 @@ function PlaygroundTable({ setRenameModal }: PlaygroundTableProp) {
           <td className="px-6 py-4">LinkedList.js</td>
           <td className="px-6 py-4">{new Date().toDateString()}</td>
           <td className="px-1 py-4 flex gap-4">
-            <button>
+            <button
+              className="focus:outline-none"
+              onClick={() => setShareModal("rlEMJCG7Yuznal9cngwRa")}
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 height="20px"
