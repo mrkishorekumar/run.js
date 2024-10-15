@@ -1,7 +1,10 @@
 import React, { FormEvent, useEffect, useState } from "react";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { useAuth } from "./AuthProvider";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
+import { Codebase, MASTER_DATA } from "@/utils/firebaseSchema";
+import { db } from "@/firebase";
 
 interface CreateNewPlaygroundProps {
   isModalOpen: boolean;
@@ -14,6 +17,7 @@ function CreateNewPlayground({ isModalOpen, close }: CreateNewPlaygroundProps) {
   const [lang, setLang] = useState<"js" | "ts">("js");
   const { user } = useAuth();
   const router = useRouter();
+  const codeCollectionRef = collection(db, "codebase");
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -35,12 +39,24 @@ function CreateNewPlayground({ isModalOpen, close }: CreateNewPlaygroundProps) {
     setLoading(true);
     try {
       if (user?.uid) {
+        const Payload: Codebase = {
+          ...MASTER_DATA,
+          fileName: fileName,
+          language: lang,
+          userId: user?.uid,
+          createdAt: serverTimestamp(),
+          lastModifiedAt: serverTimestamp(),
+        };
+        const docRef = await addDoc(codeCollectionRef, Payload);
         toast.update(id, {
           render: "Playground created successfully!.",
           type: "success",
           isLoading: false,
         });
-        router.push("/playground/fjn34nlj34wfkkl");
+        close();
+        if (docRef.id) {
+          router.push(`/playground/${docRef.id}`);
+        }
       }
     } catch {
       toast.update(id, {
