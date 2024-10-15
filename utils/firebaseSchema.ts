@@ -1,4 +1,3 @@
-import firebase from "firebase/compat/app";
 import { FieldValue } from "firebase/firestore";
 
 export interface Codebase {

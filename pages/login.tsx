@@ -15,6 +15,7 @@ function Login() {
         render: "Login successful! Enjoy your experience.",
         type: "success",
         isLoading: false,
+        autoClose: 1000,
       });
       router.replace("/playground");
     } catch {
@@ -22,6 +23,7 @@ function Login() {
         render: "Login failed. Please check your credentials and try again.",
         type: "error",
         isLoading: false,
+        autoClose: 1000,
       });
     }
   };

@@ -1,6 +1,6 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { collection, getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyB93PzAw3PD5S1ViY_cChof3nQjaqt17fE",
@@ -16,7 +16,8 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 auth.useDeviceLanguage();
 const provider = new GoogleAuthProvider();
+const codeCollectionRef = collection(db, "codebase");
 
 const signInWithGooglePopup = () => signInWithPopup(auth, provider);
 
-export { auth, signInWithGooglePopup, db };
+export { auth, signInWithGooglePopup, db, codeCollectionRef };

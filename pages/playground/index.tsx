@@ -1,16 +1,77 @@
+import { useAuth } from "@/components/AuthProvider";
 import CreateNewPlayground from "@/components/CreateNewPlayground";
 import PlaygroundHeader from "@/components/PlaygroundHeader";
 import PlaygroundTable from "@/components/PlaygroundTable";
 import RenameModal from "@/components/RenameModal";
 import { withProtected } from "@/components/Router";
 import SharePlaygroundModal from "@/components/SharePlaygroundModal";
-import React, { useState } from "react";
-import { Bounce, ToastContainer } from "react-toastify";
+import { codeCollectionRef } from "@/firebase";
+import firebase from "firebase/compat/app";
+import { getDocs, orderBy, query, where } from "firebase/firestore";
+import React, { useCallback, useEffect, useState } from "react";
+import { Bounce, toast, ToastContainer } from "react-toastify";
+
+export interface UserCodeBase {
+  id: string;
+  code: string;
+  createdAt: firebase.firestore.Timestamp;
+  fileName: string;
+  isDelete: boolean;
+  language: "js" | "ts";
+  lastModifiedAt: firebase.firestore.Timestamp;
+  share: 0 | 1;
+  star: 0 | 1;
+  userId: string;
+}
 
 function Playgrounds() {
   const [renameModal, setRenameModal] = useState("");
   const [shareModal, setShareModal] = useState("");
   const [createNewModal, setCreateNewModal] = useState(false);
+  const [userCodeBaseData, setUserCodeBaseData] = useState<UserCodeBase[]>([]);
+  const { user } = useAuth();
+
+  const getUserCodebase = useCallback(async () => {
+    const id = toast.loading("Connecting to your Server, hold tight...");
+    try {
+      const data = await getDocs(
+        query(
+          codeCollectionRef,
+          where("userId", "==", user?.uid),
+          where("isDelete", "==", false),
+          orderBy("lastModifiedAt", "asc"),
+        ),
+      );
+      /* eslint-disable  @typescript-eslint/no-explicit-any */
+      const result: UserCodeBase[] = data.docs.map((doc: any) => {
+        return { ...doc.data(), id: doc.id };
+      });
+
+      setUserCodeBaseData(result);
+
+      toast.update(id, {
+        render: "Playground Fetched successfully!",
+        type: "success",
+        isLoading: false,
+        autoClose: 1000,
+      });
+    } catch (error) {
+      console.log(error);
+      toast.update(id, {
+        render: "Oops! Something went wrong. Please try again..",
+        type: "error",
+        isLoading: false,
+        autoClose: 1000,
+      });
+    }
+  }, [user?.uid]);
+
+  useEffect(() => {
+    async function loadData() {
+      await getUserCodebase();
+    }
+    loadData();
+  }, [getUserCodebase]);
 
   return (
     <>
@@ -61,6 +122,7 @@ function Playgrounds() {
           <PlaygroundTable
             setRenameModal={setRenameModal}
             setShareModal={setShareModal}
+            userCodeBaseData={userCodeBaseData}
           />
         </section>
       </main>

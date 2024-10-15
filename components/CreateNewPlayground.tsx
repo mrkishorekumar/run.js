@@ -1,10 +1,10 @@
 import React, { FormEvent, useEffect, useState } from "react";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { addDoc, serverTimestamp } from "firebase/firestore";
 import { useAuth } from "./AuthProvider";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 import { Codebase, MASTER_DATA } from "@/utils/firebaseSchema";
-import { db } from "@/firebase";
+import { codeCollectionRef } from "@/firebase";
 
 interface CreateNewPlaygroundProps {
   isModalOpen: boolean;
@@ -17,7 +17,6 @@ function CreateNewPlayground({ isModalOpen, close }: CreateNewPlaygroundProps) {
   const [lang, setLang] = useState<"js" | "ts">("js");
   const { user } = useAuth();
   const router = useRouter();
-  const codeCollectionRef = collection(db, "codebase");
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -49,9 +48,10 @@ function CreateNewPlayground({ isModalOpen, close }: CreateNewPlaygroundProps) {
         };
         const docRef = await addDoc(codeCollectionRef, Payload);
         toast.update(id, {
-          render: "Playground created successfully!.",
+          render: "Playground created successfully!",
           type: "success",
           isLoading: false,
+          autoClose: 1000,
         });
         close();
         if (docRef.id) {
@@ -63,6 +63,7 @@ function CreateNewPlayground({ isModalOpen, close }: CreateNewPlaygroundProps) {
         render: "Oops! Something went wrong. Please try again..",
         type: "error",
         isLoading: false,
+        autoClose: 1000,
       });
     }
     setLoading(false);
