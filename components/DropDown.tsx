@@ -7,7 +7,7 @@ import { auth } from "@/firebase";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 
-function DropDown() {
+function DropDown({ fullScreen }: { fullScreen: boolean }) {
   const [isOpen, setIsOpen] = useState(false);
 
   const dropdownRef = useRef<HTMLDivElement | null>(null);
@@ -103,8 +103,8 @@ function DropDown() {
         className="flex items-center focus:outline-none"
       >
         <Image
-          width={40}
-          height={40}
+          width={fullScreen ? 30 : 40}
+          height={fullScreen ? 30 : 40}
           src={user?.photoURL || ""}
           alt="Profile"
           className="rounded-full object-fill"

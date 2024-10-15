@@ -39,7 +39,7 @@ function PlaygroundHeader({ fullScreen }: PlaygroundHeaderProps) {
           </svg>
         </Link>
       ) : (
-        <DropDown />
+        <DropDown fullScreen={fullScreen} />
       )}
     </header>
   );
