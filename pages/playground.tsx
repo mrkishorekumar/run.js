@@ -1,9 +1,12 @@
 import PlaygroundHeader from "@/components/PlaygroundHeader";
 import PlaygroundTable from "@/components/PlaygroundTable";
+import RenameModal from "@/components/RenameModal";
 import { withProtected } from "@/components/Router";
-import React from "react";
+import React, { useState } from "react";
 
 function Playgrounds() {
+  const [renameModal, setRenameModal] = useState("");
+
   return (
     <>
       <PlaygroundHeader fullScreen={false} />
@@ -47,9 +50,14 @@ function Playgrounds() {
           </button>
         </div>
         <section className="h-3/4 w-full bg-headerBg overflow-auto mt-2 rounded">
-          <PlaygroundTable />
+          <PlaygroundTable setRenameModal={setRenameModal} />
         </section>
       </main>
+      <RenameModal
+        isModalOpen={renameModal.length > 0}
+        currentTitle={renameModal}
+        close={() => setRenameModal("")}
+      />
     </>
   );
 }
