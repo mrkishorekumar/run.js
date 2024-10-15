@@ -1,13 +1,16 @@
+import CreateNewPlayground from "@/components/CreateNewPlayground";
 import PlaygroundHeader from "@/components/PlaygroundHeader";
 import PlaygroundTable from "@/components/PlaygroundTable";
 import RenameModal from "@/components/RenameModal";
 import { withProtected } from "@/components/Router";
 import SharePlaygroundModal from "@/components/SharePlaygroundModal";
 import React, { useState } from "react";
+import { Bounce, ToastContainer } from "react-toastify";
 
 function Playgrounds() {
   const [renameModal, setRenameModal] = useState("");
   const [shareModal, setShareModal] = useState("");
+  const [createNewModal, setCreateNewModal] = useState(false);
 
   return (
     <>
@@ -38,7 +41,10 @@ function Playgrounds() {
               className="w-full bg-transparent outline-none ml-3 text-white"
             />
           </div>
-          <button className="bg-blueBtn flex items-center bg-blue-500 text-white p-2 rounded-md shadow gap-3">
+          <button
+            className="bg-blueBtn flex items-center bg-blue-500 text-white p-2 rounded-md shadow gap-3"
+            onClick={() => setCreateNewModal(true)}
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               height="24px"
@@ -67,6 +73,23 @@ function Playgrounds() {
         isModalOpen={shareModal.length > 0}
         url={shareModal}
         close={() => setShareModal("")}
+      />
+      <CreateNewPlayground
+        close={() => setCreateNewModal(false)}
+        isModalOpen={createNewModal}
+      />
+      <ToastContainer
+        position="top-right"
+        autoClose={1500}
+        hideProgressBar={false}
+        newestOnTop={true}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+        transition={Bounce}
       />
     </>
   );
