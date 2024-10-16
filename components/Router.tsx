@@ -5,7 +5,7 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "./AuthProvider";
 import Loading from "./Loading";
 
-const loadingMessages = [
+export const loadingMessages = [
   "Loading, please wait...",
   "Hang tight! We're fetching your data.",
   "Just a moment! We're getting things ready for you.",

@@ -3,6 +3,7 @@
 import HelpModal from "@/components/HelpModal";
 import PlaygroundHeader from "@/components/PlaygroundHeader";
 import PlaygroundNavbar from "@/components/PlaygroundNavbar";
+import { db } from "@/firebase";
 import useAdjustFontSize from "@/hooks/useAdjustFontSize";
 import useComplieCode from "@/hooks/useComplieCode";
 import useLocalStorageState from "@/hooks/useLocalStorageState";
@@ -13,37 +14,38 @@ import { Editor } from "@monaco-editor/react";
 import { Console, Hook, Unhook } from "console-feed";
 import { Message } from "console-feed/lib/definitions/Component";
 import { emmetJSX } from "emmet-monaco-es";
-import React, { useEffect, useState } from "react";
+import { doc, getDoc, serverTimestamp, updateDoc } from "firebase/firestore";
+import { useRouter } from "next/router";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Split from "react-split";
+import { Bounce, toast, ToastContainer } from "react-toastify";
 import ts from "typescript";
+import { UserCodeBase } from "../playground/index";
+import { useAuth } from "@/components/AuthProvider";
+import Loading from "@/components/Loading";
 
 function Playground() {
+  const router = useRouter();
+  const { user } = useAuth();
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const [javascriptCode, setJavascriptCode] = useLocalStorageState(
-    "jscode",
-    `
-    // Free Online Javascript Complier
-    // Write, Edit and Run your Javascript code using JS Online Compiler
-    
-    console.log("Try RunJs.in");
-        `,
+    "jscode-db",
+    ``,
   );
   const [typescriptCode, setTypescriptCode] = useLocalStorageState(
-    "tscode",
-    `
-    // Free Online Typescript Complier
-    // Write, Edit and Run your Typescript code using TS Online Compiler
-    
-    const message:string = "Try RunJs.in";
-    console.log(message);
-        `,
+    "tscode-db",
+    ``,
   );
   const [fontSize, setFontSize] = useLocalStorageState("font", 16);
   /* eslint-disable  @typescript-eslint/no-explicit-any */
   const [logs, setLogs] = useState<Message[] | any[]>([]);
   const [fullScreen, setFullScreen] = useState(false);
-  const [lang] = useState(true);
+  const [lang, setLang] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [consoleFilter, setConsoleFilter] = useState("");
+  const [editable, setEditable] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [fileName, setFileName] = useState("");
 
   function toggleFullScreen() {
     setFullScreen((prev) => !prev);
@@ -57,6 +59,77 @@ function Playground() {
     );
     return () => Unhook(hookedConsole);
   }
+
+  const getCodeFromDb = useCallback(async () => {
+    const id = toast.loading("Connecting you to Cloud, hold tight...");
+    try {
+      const codeCollectionRef = doc(
+        db,
+        "codebase",
+        router.query.slug as string,
+      );
+      /* eslint-disable  @typescript-eslint/no-explicit-any */
+      const data: any = await getDoc(codeCollectionRef);
+      if (data.exists()) {
+        const result: UserCodeBase = data.data();
+        setFileName(result.fileName);
+        setLang(result.language === "js");
+        if (result.userId === user?.uid) {
+          toast.update(id, {
+            render: "Playground Fetched successfully!",
+            type: "success",
+            isLoading: false,
+            autoClose: 1000,
+          });
+          setEditable(false);
+          if (result.language == "js") {
+            setJavascriptCode(result.code);
+          } else {
+            setTypescriptCode(result.code);
+          }
+        } else if (result.share === 1) {
+          toast.update(id, {
+            render: "Playground Fetched successfully!",
+            type: "success",
+            isLoading: false,
+            autoClose: 1000,
+          });
+          if (result.language == "js") {
+            setJavascriptCode(result.code);
+          } else {
+            setTypescriptCode(result.code);
+          }
+        } else {
+          router.replace("/404");
+          return;
+        }
+      } else {
+        router.replace("/404");
+        return;
+      }
+    } catch {
+      toast.update(id, {
+        render: "Oops! Something went wrong. Please try again..",
+        type: "error",
+        isLoading: false,
+        autoClose: 1000,
+      });
+    }
+  }, [router, user, setJavascriptCode, setTypescriptCode]);
+
+  useEffect(() => {
+    async function loadData() {
+      if (
+        router.query.slug !== undefined &&
+        typeof router.query.slug !== "object"
+      ) {
+        setLoading(true);
+        await getCodeFromDb();
+        setLoading(false);
+      }
+    }
+    loadData();
+  }, [router.query.slug, getCodeFromDb]);
 
   useEffect(() => {
     const cleanup = captureConsoleFunction();
@@ -101,11 +174,50 @@ function Playground() {
     return result.outputText;
   };
 
+  const updateCode = async () => {
+    if (buttonRef.current) {
+      buttonRef.current.disabled = true;
+      const id = toast.loading("Connecting you to Cloud, hold tight...");
+      try {
+        const codeCollectionRef = doc(
+          db,
+          "codebase",
+          router.query.slug as string,
+        );
+        await updateDoc(codeCollectionRef, {
+          code: lang ? javascriptCode : typescriptCode,
+          lastModifiedAt: serverTimestamp(),
+        });
+        toast.update(id, {
+          render: "Playground Updated successfully!",
+          type: "success",
+          isLoading: false,
+          autoClose: 1000,
+        });
+      } catch {
+        toast.update(id, {
+          render: "Oops! Something went wrong. Please try again..",
+          type: "error",
+          isLoading: false,
+          autoClose: 1000,
+        });
+      }
+      buttonRef.current.disabled = false;
+    }
+  };
+
   useAdjustFontSize(increaseFontSize, decreaseFontSize);
   useSaveFileShortcut(javascriptCode);
   useComplieCode(handleRunClick);
 
-  // console.log(router.query.slug)
+  if (loading)
+    return (
+      <Loading
+        randomMessage={
+          "We're working on it! Your content will be here shortly."
+        }
+      />
+    );
 
   return (
     <>
@@ -124,6 +236,10 @@ function Playground() {
             handleRunClick={handleRunClick}
             formatCodeFunction={formatCodeFunction}
             toggleFullScreen={toggleFullScreen}
+            updateCode={updateCode}
+            showUpload={!editable}
+            updatebuttonRef={buttonRef}
+            fileName={fileName}
           />
           <section className={`${fullScreen ? "h-86vh" : "h-81vh"} w-full`}>
             <Editor
@@ -150,6 +266,7 @@ function Playground() {
                 fontSize: fontSize,
                 cursorStyle: "block",
                 language: lang ? "javascript" : "typescript",
+                readOnly: editable,
               }}
             />
           </section>
@@ -217,6 +334,19 @@ function Playground() {
       <HelpModal
         isModalOpen={isModalOpen}
         close={() => setIsModalOpen(false)}
+      />
+      <ToastContainer
+        position="top-right"
+        autoClose={1500}
+        hideProgressBar={false}
+        newestOnTop={true}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+        transition={Bounce}
       />
     </>
   );

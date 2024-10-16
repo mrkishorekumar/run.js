@@ -5,7 +5,7 @@ function Loading({ randomMessage }: { randomMessage: string }) {
   return (
     <main className="bg-navbarBg flex flex-col justify-center items-center gap-4 h-100vh w-full">
       <Image
-        src="./runjs.png"
+        src="https://runjs.rigial.com/runjs.png"
         alt="Bouncing RunJs Logo"
         width={200}
         height={200}

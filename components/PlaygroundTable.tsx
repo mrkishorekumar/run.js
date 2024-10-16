@@ -1,4 +1,5 @@
 import { UserCodeBase } from "@/pages/playground";
+import { useRouter } from "next/router";
 import React from "react";
 
 interface PlaygroundTableProp {
@@ -27,6 +28,8 @@ function PlaygroundTable({
     URL.revokeObjectURL(link.href);
   };
 
+  const router = useRouter();
+
   return (
     <table className="w-full text-sm text-left rtl:text-right text-gray-500">
       <thead className="text-base text-white bg-headerBg sticky top-0 border-b-2 border-borderColor">
@@ -51,6 +54,7 @@ function PlaygroundTable({
             <tr
               className="border-b border-borderColor text-white hover:cursor-pointer"
               key={val.id}
+              onClick={() => router.push(`/playground/${val.id}`)}
             >
               <th scope="row" className="pl-6 py-4">
                 {val.language === "js" ? (
