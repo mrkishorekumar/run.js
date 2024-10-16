@@ -22,7 +22,9 @@ function PlaygroundHeader({ fullScreen }: PlaygroundHeaderProps) {
           Free Online Javascript Complier
         </h5>
       </div>
-      {!user?.uid ? (
+      {user === undefined ? (
+        <div className="animate-pulse rounded-full bg-slate-300 h-10 w-10"></div>
+      ) : user === null ? (
         <Link
           href={"/login"}
           className={`bg-transparent text-white font-semibold ${fullScreen ? "py-1" : "py-2"} px-3 border border-white rounded flex flex-row items-center`}
