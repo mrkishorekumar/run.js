@@ -11,7 +11,7 @@ const saveFile = (javascriptCode: string) => {
   URL.revokeObjectURL(link.href);
 };
 
-const useSaveFileShortcut = (javascriptCode: string) => {
+const useSaveFileShortcut = (callbackFunction: () => Promise<void>) => {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       const isCtrlOrCmd = event.ctrlKey || event.metaKey;
@@ -19,7 +19,7 @@ const useSaveFileShortcut = (javascriptCode: string) => {
 
       if (isCtrlOrCmd && isS) {
         event.preventDefault();
-        saveFile(javascriptCode);
+        callbackFunction();
       }
     };
 
@@ -28,7 +28,7 @@ const useSaveFileShortcut = (javascriptCode: string) => {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [javascriptCode]);
+  }, [callbackFunction]);
 };
 
 export default useSaveFileShortcut;

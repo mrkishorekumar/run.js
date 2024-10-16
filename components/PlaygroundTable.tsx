@@ -12,7 +12,12 @@ interface PlaygroundTableProp {
       collectionId: string;
     }>
   >;
-  setShareModal: React.Dispatch<React.SetStateAction<string>>;
+  setShareModal: React.Dispatch<
+    React.SetStateAction<{
+      prevShare: 0 | 1;
+      collectionId: string;
+    }>
+  >;
   userCodeBaseData: UserCodeBase[];
   getUserCodebase: () => Promise<void>;
 }
@@ -145,7 +150,10 @@ function PlaygroundTable({
                   className="focus:outline-none"
                   onClick={(e) => {
                     e.stopPropagation();
-                    setShareModal(val.id);
+                    setShareModal({
+                      collectionId: val.id,
+                      prevShare: val.share,
+                    });
                   }}
                 >
                   <svg

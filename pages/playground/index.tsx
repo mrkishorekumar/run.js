@@ -29,7 +29,13 @@ function Playgrounds() {
     prevTitle: "",
     collectionId: "",
   });
-  const [shareModal, setShareModal] = useState("");
+  const [shareModal, setShareModal] = useState<{
+    prevShare: 0 | 1;
+    collectionId: string;
+  }>({
+    prevShare: 0,
+    collectionId: "",
+  });
   const [createNewModal, setCreateNewModal] = useState(false);
   const [userCodeBaseData, setUserCodeBaseData] = useState<UserCodeBase[]>([]);
   const { user } = useAuth();
@@ -137,9 +143,10 @@ function Playgrounds() {
         getUserCodebase={getUserCodebase}
       />
       <SharePlaygroundModal
-        isModalOpen={shareModal.length > 0}
-        url={shareModal}
-        close={() => setShareModal("")}
+        isModalOpen={shareModal.collectionId.length > 0}
+        info={shareModal}
+        close={() => setShareModal({ prevShare: 0, collectionId: "" })}
+        getUserCodebase={getUserCodebase}
       />
       <CreateNewPlayground
         close={() => setCreateNewModal(false)}

@@ -7,7 +7,6 @@ import PlaygroundNavbar from "@/components/PlaygroundNavbar";
 import useAdjustFontSize from "@/hooks/useAdjustFontSize";
 import useComplieCode from "@/hooks/useComplieCode";
 import useLocalStorageState from "@/hooks/useLocalStorageState";
-import useSaveFileShortcut from "@/hooks/useSaveFileShortcut";
 import { consoleTheme } from "@/utils/consoleTheme";
 import { onFormatClick } from "@/utils/onFormatClick";
 import { Editor } from "@monaco-editor/react";
@@ -107,7 +106,6 @@ console.log(message);
   };
 
   useAdjustFontSize(increaseFontSize, decreaseFontSize);
-  useSaveFileShortcut(javascriptCode);
   useComplieCode(handleRunClick);
 
   return (

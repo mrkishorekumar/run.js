@@ -61,7 +61,6 @@ function Playground() {
   }
 
   const getCodeFromDb = useCallback(async () => {
-    const id = toast.loading("Connecting you to Cloud, hold tight...");
     try {
       const codeCollectionRef = doc(
         db,
@@ -75,12 +74,6 @@ function Playground() {
         setFileName(result.fileName);
         setLang(result.language === "js");
         if (result.userId === user?.uid) {
-          toast.update(id, {
-            render: "Playground Fetched successfully!",
-            type: "success",
-            isLoading: false,
-            autoClose: 1000,
-          });
           setEditable(false);
           if (result.language == "js") {
             setJavascriptCode(result.code);
@@ -88,12 +81,6 @@ function Playground() {
             setTypescriptCode(result.code);
           }
         } else if (result.share === 1) {
-          toast.update(id, {
-            render: "Playground Fetched successfully!",
-            type: "success",
-            isLoading: false,
-            autoClose: 1000,
-          });
           if (result.language == "js") {
             setJavascriptCode(result.code);
           } else {
@@ -108,12 +95,7 @@ function Playground() {
         return;
       }
     } catch {
-      toast.update(id, {
-        render: "Oops! Something went wrong. Please try again..",
-        type: "error",
-        isLoading: false,
-        autoClose: 1000,
-      });
+      toast.error("Oops! Something went wrong. Please try again..");
     }
   }, [router, user, setJavascriptCode, setTypescriptCode]);
 
@@ -207,7 +189,7 @@ function Playground() {
   };
 
   useAdjustFontSize(increaseFontSize, decreaseFontSize);
-  useSaveFileShortcut(javascriptCode);
+  useSaveFileShortcut(updateCode);
   useComplieCode(handleRunClick);
 
   if (loading)

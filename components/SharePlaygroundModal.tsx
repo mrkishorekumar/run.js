@@ -1,16 +1,26 @@
-import React, { useEffect } from "react";
+import { db } from "@/firebase";
+import { doc, updateDoc } from "firebase/firestore";
+import React, { useEffect, useRef } from "react";
+import { toast } from "react-toastify";
 
 interface SharePlaygroundModalProps {
   isModalOpen: boolean;
   close: () => void;
-  url: string;
+  info: {
+    prevShare: 0 | 1;
+    collectionId: string;
+  };
+  getUserCodebase: () => Promise<void>;
 }
 
 function SharePlaygroundModal({
   isModalOpen,
   close,
-  url,
+  info,
+  getUserCodebase,
 }: SharePlaygroundModalProps) {
+  const submitButtonRef = useRef<HTMLButtonElement>(null);
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -25,6 +35,41 @@ function SharePlaygroundModal({
     };
   }, [close]);
 
+  async function updateSharing() {
+    if (submitButtonRef.current) {
+      submitButtonRef.current.disabled = true;
+      const id = toast.loading("Connecting you to Cloud, hold tight...");
+      try {
+        const codeCollectionRef = doc(db, "codebase", info.collectionId);
+        await updateDoc(codeCollectionRef, {
+          share: info.prevShare === 1 ? 0 : 1,
+        });
+        navigator.clipboard.writeText(
+          `https://runjs.rigial.com/playground/${info.collectionId}`,
+        );
+        await getUserCodebase();
+        toast.update(id, {
+          render:
+            info.prevShare === 1
+              ? "Turned off Sharing successfully!"
+              : `URL Copied to Clipboard!`,
+          type: "success",
+          isLoading: false,
+          autoClose: 1000,
+        });
+        close();
+      } catch {
+        toast.update(id, {
+          render: "Oops! Something went wrong. Please try again..",
+          type: "error",
+          isLoading: false,
+          autoClose: 1000,
+        });
+      }
+      submitButtonRef.current.disabled = false;
+    }
+  }
+
   if (!isModalOpen) return null;
 
   return (
@@ -36,7 +81,9 @@ function SharePlaygroundModal({
       ></div>
       <div className="bg-modalBg rounded shadow-lg p-6 z-10 max-w-md w-full flex flex-col gap-3">
         <h1 className="font-semibold text-xl">
-          Do you want share the Playground?
+          {info.prevShare === 0
+            ? "Do you want share the Playground?"
+            : "Do want turn off Sharing?"}
         </h1>
         <h5 className="text-base">
           Anyone on the Internet with the link can view
@@ -45,19 +92,35 @@ function SharePlaygroundModal({
           type="url"
           disabled={true}
           className="bg-modalBg border focus:outline-none rounded p-2"
-          value={`https://runjs.rigial.com/playground/${url}`}
+          value={`https://runjs.rigial.com/playground/${info.collectionId}`}
         />
-        <button className="bg-blueBtn flex justify-center items-center bg-blue-500 text-white p-2 rounded-md shadow gap-3">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            height="24px"
-            viewBox="0 -960 960 960"
-            width="24px"
-            fill="#FFFFFF"
-          >
-            <path d="M360-240q-33 0-56.5-23.5T280-320v-480q0-33 23.5-56.5T360-880h360q33 0 56.5 23.5T800-800v480q0 33-23.5 56.5T720-240H360Zm0-80h360v-480H360v480ZM200-80q-33 0-56.5-23.5T120-160v-560h80v560h440v80H200Zm160-240v-480 480Z" />
-          </svg>
-          Share
+        <button
+          ref={submitButtonRef}
+          onClick={updateSharing}
+          className="bg-blueBtn flex justify-center items-center bg-blue-500 text-white p-2 rounded-md shadow gap-3 text-lg"
+        >
+          {info.prevShare === 0 ? (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="24px"
+              viewBox="0 -960 960 960"
+              width="24px"
+              fill="#FFFFFF"
+            >
+              <path d="M680-80q-50 0-85-35t-35-85q0-6 3-28L282-392q-16 15-37 23.5t-45 8.5q-50 0-85-35t-35-85q0-50 35-85t85-35q24 0 45 8.5t37 23.5l281-164q-2-7-2.5-13.5T560-760q0-50 35-85t85-35q50 0 85 35t35 85q0 50-35 85t-85 35q-24 0-45-8.5T598-672L317-508q2 7 2.5 13.5t.5 14.5q0 8-.5 14.5T317-452l281 164q16-15 37-23.5t45-8.5q50 0 85 35t35 85q0 50-35 85t-85 35Zm0-80q17 0 28.5-11.5T720-200q0-17-11.5-28.5T680-240q-17 0-28.5 11.5T640-200q0 17 11.5 28.5T680-160ZM200-440q17 0 28.5-11.5T240-480q0-17-11.5-28.5T200-520q-17 0-28.5 11.5T160-480q0 17 11.5 28.5T200-440Zm480-280q17 0 28.5-11.5T720-760q0-17-11.5-28.5T680-800q-17 0-28.5 11.5T640-760q0 17 11.5 28.5T680-720Zm0 520ZM200-480Zm480-280Z" />
+            </svg>
+          ) : (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="24px"
+              viewBox="0 -960 960 960"
+              width="24px"
+              fill="#FFFFFF"
+            >
+              <path d="M680-160q17 0 28.5-11.5T720-200q0-17-11.5-28.5T680-240q-17 0-28.5 11.5T640-200q0 17 11.5 28.5T680-160Zm0-560q17 0 28.5-11.5T720-760q0-17-11.5-28.5T680-800q-17 0-28.5 11.5T640-760q0 17 11.5 28.5T680-720ZM80-470v-10q0-50 35-85t85-35q24 0 45 8.5t37 23.5l281-164q-2-7-2.5-13.5T560-760q0-50 35-85t85-35q50 0 85 35t35 85q0 50-35 85t-85 35q-24 0-45-8.5T598-672L318-509q-19-5-38.5-8t-39.5-3q-45 0-85.5 13T80-470ZM680-80q-50 0-85-35t-35-85q0-6 3-28l-43-26q-2-24-7-46.5T499-345l99 57q16-15 37-23.5t45-8.5q50 0 85 35t35 85q0 50-35 85t-85 35ZM240-40q-83 0-141.5-58.5T40-240q0-83 58.5-141.5T240-440q83 0 141.5 58.5T440-240q0 83-58.5 141.5T240-40Zm0-172 70 71 29-28-71-71 71-71-28-28-71 71-71-71-28 28 71 71-71 71 28 28 71-71Zm440 12Zm0-560Z" />
+            </svg>
+          )}
+          {info.prevShare === 0 ? "Share" : "Stop Sharing"}
         </button>
       </div>
     </div>
