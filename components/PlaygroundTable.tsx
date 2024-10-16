@@ -6,7 +6,12 @@ import React, { useRef } from "react";
 import { toast } from "react-toastify";
 
 interface PlaygroundTableProp {
-  setRenameModal: React.Dispatch<React.SetStateAction<string>>;
+  setRenameModal: React.Dispatch<
+    React.SetStateAction<{
+      prevTitle: string;
+      collectionId: string;
+    }>
+  >;
   setShareModal: React.Dispatch<React.SetStateAction<string>>;
   userCodeBaseData: UserCodeBase[];
   getUserCodebase: () => Promise<void>;
@@ -51,7 +56,7 @@ function PlaygroundTable({
           star: val === 1 ? 0 : 1,
         });
         toast.update(id, {
-          render: "Playground Fetched successfully!",
+          render: `${val === 1 ? "Unstarred" : "Starred"} successfully!`,
           type: "success",
           isLoading: false,
           autoClose: 1000,
@@ -172,7 +177,10 @@ function PlaygroundTable({
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    setRenameModal(val.fileName);
+                    setRenameModal({
+                      prevTitle: val.fileName,
+                      collectionId: val.id,
+                    });
                   }}
                 >
                   <svg

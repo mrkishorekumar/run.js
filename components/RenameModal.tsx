@@ -1,13 +1,26 @@
-import React, { useEffect, useState } from "react";
+import { db } from "@/firebase";
+import { doc, updateDoc } from "firebase/firestore";
+import React, { FormEvent, useEffect, useRef, useState } from "react";
+import { toast } from "react-toastify";
 
 interface RenameModalProps {
   isModalOpen: boolean;
   close: () => void;
-  currentTitle: string;
+  info: {
+    prevTitle: string;
+    collectionId: string;
+  };
+  getUserCodebase: () => Promise<void>;
 }
 
-function RenameModal({ isModalOpen, close, currentTitle }: RenameModalProps) {
+function RenameModal({
+  isModalOpen,
+  close,
+  info,
+  getUserCodebase,
+}: RenameModalProps) {
   const [fileName, setFileName] = useState("");
+  const submitButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -23,6 +36,36 @@ function RenameModal({ isModalOpen, close, currentTitle }: RenameModalProps) {
     };
   }, [close]);
 
+  async function updateFileName(e: FormEvent) {
+    e.preventDefault();
+    if (submitButtonRef.current) {
+      submitButtonRef.current.disabled = true;
+      const id = toast.loading("Connecting you to Cloud, hold tight...");
+      try {
+        const codeCollectionRef = doc(db, "codebase", info.collectionId);
+        await updateDoc(codeCollectionRef, {
+          fileName: fileName,
+        });
+        await getUserCodebase();
+        toast.update(id, {
+          render: `Filename was renamed successfully!`,
+          type: "success",
+          isLoading: false,
+          autoClose: 1000,
+        });
+        close();
+      } catch {
+        toast.update(id, {
+          render: "Oops! Something went wrong. Please try again..",
+          type: "error",
+          isLoading: false,
+          autoClose: 1000,
+        });
+      }
+      submitButtonRef.current.disabled = false;
+    }
+  }
+
   if (!isModalOpen) return null;
 
   return (
@@ -33,9 +76,9 @@ function RenameModal({ isModalOpen, close, currentTitle }: RenameModalProps) {
         style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
       ></div>
       <div className="bg-modalBg rounded shadow-lg p-6 z-10 max-w-sm w-full flex flex-col gap-3">
-        <h1 className="font-semibold text-xl">{currentTitle}</h1>
+        <h1 className="font-semibold text-xl">{info.prevTitle}</h1>
         <h5 className="text-base">Enter a new title for this playground:</h5>
-        <form className="flex flex-col pt-3">
+        <form className="flex flex-col pt-3" onSubmit={updateFileName}>
           <input
             autoFocus={true}
             maxLength={50}
@@ -55,6 +98,7 @@ function RenameModal({ isModalOpen, close, currentTitle }: RenameModalProps) {
               Cancel
             </button>
             <button
+              ref={submitButtonRef}
               className="bg-blueBtn text-white py-2 px-3 rounded"
               type="submit"
             >

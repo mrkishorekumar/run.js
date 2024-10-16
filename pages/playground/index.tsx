@@ -25,7 +25,10 @@ export interface UserCodeBase {
 }
 
 function Playgrounds() {
-  const [renameModal, setRenameModal] = useState("");
+  const [renameModal, setRenameModal] = useState({
+    prevTitle: "",
+    collectionId: "",
+  });
   const [shareModal, setShareModal] = useState("");
   const [createNewModal, setCreateNewModal] = useState(false);
   const [userCodeBaseData, setUserCodeBaseData] = useState<UserCodeBase[]>([]);
@@ -128,9 +131,10 @@ function Playgrounds() {
         </section>
       </main>
       <RenameModal
-        isModalOpen={renameModal.length > 0}
-        currentTitle={renameModal}
-        close={() => setRenameModal("")}
+        isModalOpen={renameModal.prevTitle.length > 0}
+        info={renameModal}
+        close={() => setRenameModal({ prevTitle: "", collectionId: "" })}
+        getUserCodebase={getUserCodebase}
       />
       <SharePlaygroundModal
         isModalOpen={shareModal.length > 0}
