@@ -39,7 +39,7 @@ function Playgrounds() {
           codeCollectionRef,
           where("userId", "==", user?.uid),
           where("isDelete", "==", false),
-          orderBy("lastModifiedAt", "asc"),
+          orderBy("lastModifiedAt", "desc"),
         ),
       );
       /* eslint-disable  @typescript-eslint/no-explicit-any */
