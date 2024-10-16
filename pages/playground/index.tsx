@@ -123,6 +123,7 @@ function Playgrounds() {
             setRenameModal={setRenameModal}
             setShareModal={setShareModal}
             userCodeBaseData={userCodeBaseData}
+            getUserCodebase={getUserCodebase}
           />
         </section>
       </main>

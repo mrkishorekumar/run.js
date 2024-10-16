@@ -1,17 +1,22 @@
+import { db } from "@/firebase";
 import { UserCodeBase } from "@/pages/playground";
+import { doc, updateDoc } from "firebase/firestore";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useRef } from "react";
+import { toast } from "react-toastify";
 
 interface PlaygroundTableProp {
   setRenameModal: React.Dispatch<React.SetStateAction<string>>;
   setShareModal: React.Dispatch<React.SetStateAction<string>>;
   userCodeBaseData: UserCodeBase[];
+  getUserCodebase: () => Promise<void>;
 }
 
 function PlaygroundTable({
   setRenameModal,
   setShareModal,
   userCodeBaseData,
+  getUserCodebase,
 }: PlaygroundTableProp) {
   const saveFile = (
     javascriptCode: string,
@@ -29,6 +34,40 @@ function PlaygroundTable({
   };
 
   const router = useRouter();
+  const starButtonRef = useRef<HTMLButtonElement>(null);
+
+  async function updateStar(
+    e: React.MouseEvent<HTMLButtonElement>,
+    val: 0 | 1,
+    collectionId: string,
+  ) {
+    e.stopPropagation();
+    if (starButtonRef.current) {
+      starButtonRef.current.disabled = true;
+      const id = toast.loading("Connecting you to Cloud, hold tight...");
+      try {
+        const codeCollectionRef = doc(db, "codebase", collectionId);
+        await updateDoc(codeCollectionRef, {
+          star: val === 1 ? 0 : 1,
+        });
+        toast.update(id, {
+          render: "Playground Fetched successfully!",
+          type: "success",
+          isLoading: false,
+          autoClose: 1000,
+        });
+        await getUserCodebase();
+      } catch {
+        toast.update(id, {
+          render: "Oops! Something went wrong. Please try again..",
+          type: "error",
+          isLoading: false,
+          autoClose: 1000,
+        });
+      }
+      starButtonRef.current.disabled = false;
+    }
+  }
 
   return (
     <table className="w-full text-sm text-left rtl:text-right text-gray-500">
@@ -99,7 +138,10 @@ function PlaygroundTable({
               <td className="px-1 py-4 flex gap-4">
                 <button
                   className="focus:outline-none"
-                  onClick={() => setShareModal(val.id)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShareModal(val.id);
+                  }}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -112,7 +154,10 @@ function PlaygroundTable({
                   </svg>{" "}
                 </button>
                 <button
-                  onClick={() => saveFile(val.code, val.fileName, val.language)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    saveFile(val.code, val.fileName, val.language);
+                  }}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -124,7 +169,12 @@ function PlaygroundTable({
                     <path d="M480-320 280-520l56-58 104 104v-326h80v326l104-104 56 58-200 200ZM240-160q-33 0-56.5-23.5T160-240v-120h80v120h480v-120h80v120q0 33-23.5 56.5T720-160H240Z" />
                   </svg>
                 </button>
-                <button onClick={() => setRenameModal(val.fileName)}>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setRenameModal(val.fileName);
+                  }}
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     height="24px"
@@ -135,7 +185,10 @@ function PlaygroundTable({
                     <path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z" />
                   </svg>
                 </button>
-                <button>
+                <button
+                  ref={starButtonRef}
+                  onClick={(e) => updateStar(e, val.star, val.id)}
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     height="24px"
