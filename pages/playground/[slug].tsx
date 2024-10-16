@@ -243,6 +243,7 @@ function Playground() {
           />
           <section className={`${fullScreen ? "h-86vh" : "h-81vh"} w-full`}>
             <Editor
+              loading={<Loading randomMessage="Setting up your editor." />}
               height="100%"
               theme={"vs-dark"}
               language={lang ? "javascript" : "typescript"}

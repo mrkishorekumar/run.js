@@ -1,6 +1,7 @@
 "use client";
 
 import HelpModal from "@/components/HelpModal";
+import Loading from "@/components/Loading";
 import PlaygroundHeader from "@/components/PlaygroundHeader";
 import PlaygroundNavbar from "@/components/PlaygroundNavbar";
 import useAdjustFontSize from "@/hooks/useAdjustFontSize";
@@ -130,6 +131,7 @@ console.log(message);
           />
           <section className={`${fullScreen ? "h-86vh" : "h-81vh"} w-full`}>
             <Editor
+              loading={<Loading randomMessage="Setting up your editor." />}
               height="100%"
               theme={"vs-dark"}
               language={lang ? "javascript" : "typescript"}
