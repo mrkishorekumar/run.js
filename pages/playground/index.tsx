@@ -6,6 +6,7 @@ import RenameModal from "@/components/RenameModal";
 import { withProtected } from "@/components/Router";
 import SharePlaygroundModal from "@/components/SharePlaygroundModal";
 import { codeCollectionRef } from "@/firebase";
+import { debounce } from "@/utils/commonFunction";
 import firebase from "firebase/compat/app";
 import { getDocs, orderBy, query, where } from "firebase/firestore";
 import React, { useCallback, useEffect, useState } from "react";
@@ -38,7 +39,20 @@ function Playgrounds() {
   });
   const [createNewModal, setCreateNewModal] = useState(false);
   const [userCodeBaseData, setUserCodeBaseData] = useState<UserCodeBase[]>([]);
+  const [filterData, setFilterData] = useState<UserCodeBase[]>([]);
   const { user } = useAuth();
+
+  const debouncedFilterSearchTerm = debounce((searchTerm: string) => {
+    const lowerCaseSearchTerm = searchTerm.toLowerCase();
+
+    const searchResult = userCodeBaseData.filter(
+      (val) =>
+        val.fileName.toLowerCase().includes(lowerCaseSearchTerm) ||
+        val.language.includes(lowerCaseSearchTerm),
+    );
+
+    setFilterData(searchResult.length > 0 ? searchResult : userCodeBaseData);
+  }, 300);
 
   const getUserCodebase = useCallback(async () => {
     const id = toast.loading("Connecting to your Server, hold tight...");
@@ -57,6 +71,7 @@ function Playgrounds() {
       });
 
       setUserCodeBaseData(result);
+      setFilterData(result);
 
       toast.update(id, {
         render: "Playground Fetched successfully!",
@@ -109,6 +124,7 @@ function Playgrounds() {
               type="text"
               placeholder="Search files"
               className="w-full bg-transparent outline-none ml-3 text-white"
+              onChange={(e) => debouncedFilterSearchTerm(e.target.value)}
             />
           </div>
           <button
@@ -131,7 +147,7 @@ function Playgrounds() {
           <PlaygroundTable
             setRenameModal={setRenameModal}
             setShareModal={setShareModal}
-            userCodeBaseData={userCodeBaseData}
+            userCodeBaseData={filterData}
             getUserCodebase={getUserCodebase}
           />
         </section>
