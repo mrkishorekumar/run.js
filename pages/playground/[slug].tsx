@@ -250,6 +250,10 @@ function Playground() {
                 cursorStyle: "block",
                 language: lang ? "javascript" : "typescript",
                 readOnly: editable,
+                bracketPairColorization: {
+                  enabled: true
+                },
+                cursorBlinking: 'expand',
               }}
             />
           </section>

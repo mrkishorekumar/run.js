@@ -153,6 +153,10 @@ console.log(message);
                 fontSize: fontSize,
                 cursorStyle: "block",
                 language: lang ? "javascript" : "typescript",
+                bracketPairColorization: {
+                  enabled: true
+                },
+                cursorBlinking: 'expand',
               }}
             />
           </section>
