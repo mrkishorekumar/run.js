@@ -12,8 +12,7 @@ export const onFormatClick = async (javascriptCode: string) => {
       singleQuote: true,
     });
     return formatted.replace(/\n$/, "");
-  } catch (error) {
-    console.log(error);
-    return "";
+  } catch {
+    return javascriptCode;
   }
 };

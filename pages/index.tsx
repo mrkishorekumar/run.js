@@ -154,9 +154,9 @@ console.log(message);
                 cursorStyle: "block",
                 language: lang ? "javascript" : "typescript",
                 bracketPairColorization: {
-                  enabled: true
+                  enabled: true,
                 },
-                cursorBlinking: 'expand',
+                cursorBlinking: "expand",
               }}
             />
           </section>

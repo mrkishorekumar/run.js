@@ -251,9 +251,9 @@ function Playground() {
                 language: lang ? "javascript" : "typescript",
                 readOnly: editable,
                 bracketPairColorization: {
-                  enabled: true
+                  enabled: true,
                 },
-                cursorBlinking: 'expand',
+                cursorBlinking: "expand",
               }}
             />
           </section>
