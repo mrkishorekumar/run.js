@@ -1,5 +1,6 @@
 import { useAuth } from "@/components/AuthProvider";
 import CreateNewPlayground from "@/components/CreateNewPlayground";
+import Loading from "@/components/Loading";
 import PlaygroundHeader from "@/components/PlaygroundHeader";
 import PlaygroundTable from "@/components/PlaygroundTable";
 import RenameModal from "@/components/RenameModal";
@@ -40,6 +41,7 @@ function Playgrounds() {
   const [createNewModal, setCreateNewModal] = useState(false);
   const [userCodeBaseData, setUserCodeBaseData] = useState<UserCodeBase[]>([]);
   const [filterData, setFilterData] = useState<UserCodeBase[]>([]);
+  const [loading, setLoading] = useState(false);
   const { user } = useAuth();
 
   const debouncedFilterSearchTerm = debounce((searchTerm: string) => {
@@ -92,10 +94,21 @@ function Playgrounds() {
 
   useEffect(() => {
     async function loadData() {
+      setLoading(true);
       await getUserCodebase();
+      setLoading(false);
     }
     loadData();
   }, [getUserCodebase]);
+
+  if (loading)
+    return (
+      <Loading
+        randomMessage={
+          "We're working on it! Your content will be here shortly."
+        }
+      />
+    );
 
   return (
     <>
