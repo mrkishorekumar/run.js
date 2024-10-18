@@ -105,7 +105,7 @@ function DropDown({ fullScreen }: { fullScreen: boolean }) {
         <Image
           width={fullScreen ? 30 : 40}
           height={fullScreen ? 30 : 40}
-          src={user?.photoURL || ""}
+          src={user?.photoURL || "./profile.png"}
           alt="Profile"
           className="rounded-full object-fill"
         />
