@@ -5,72 +5,45 @@ import { useRouter } from "next/router";
 import React, { useRef } from "react";
 import { toast } from "react-toastify";
 
-interface PlaygroundTableProp {
-  setRenameModal: React.Dispatch<
-    React.SetStateAction<{
-      prevTitle: string;
-      collectionId: string;
-    }>
-  >;
-  setShareModal: React.Dispatch<
-    React.SetStateAction<{
-      prevShare: 0 | 1;
-      collectionId: string;
-    }>
-  >;
+interface DeletedTableProps {
   userCodeBaseData: UserCodeBase[];
+  filterData: UserCodeBase[];
   getUserCodebase: () => Promise<void>;
-  setCreateNewModal: React.Dispatch<React.SetStateAction<boolean>>;
-  setDeleteModal: React.Dispatch<React.SetStateAction<string>>;
+  setConfirmDeleteModal: React.Dispatch<
+    React.SetStateAction<{
+      name: string;
+      id: string;
+    }>
+  >;
 }
 
-function PlaygroundTable({
-  setRenameModal,
-  setShareModal,
+function DeletedTable({
   userCodeBaseData,
+  filterData,
   getUserCodebase,
-  setCreateNewModal,
-  setDeleteModal,
-}: PlaygroundTableProp) {
-  const saveFile = (
-    javascriptCode: string,
-    fileName: string,
-    lang: "js" | "ts",
-  ) => {
-    const file = `${fileName}.${lang}`;
-    const fileContent = javascriptCode;
-    const blob = new Blob([fileContent], { type: "text/javascript" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = file;
-    link.click();
-    URL.revokeObjectURL(link.href);
-  };
-
+  setConfirmDeleteModal,
+}: DeletedTableProps) {
   const router = useRouter();
-  const starButtonRef = useRef<HTMLButtonElement>(null);
 
-  async function updateStar(
-    e: React.MouseEvent<HTMLButtonElement>,
-    val: 0 | 1,
-    collectionId: string,
-  ) {
-    e.stopPropagation();
-    if (starButtonRef.current) {
-      starButtonRef.current.disabled = true;
+  const restoreButtonRef = useRef<HTMLButtonElement>(null);
+
+  async function restoreColeection(collectionId: string) {
+    if (restoreButtonRef.current) {
+      restoreButtonRef.current.disabled = true;
       const id = toast.loading("Connecting you to Cloud, hold tight...");
       try {
         const codeCollectionRef = doc(db, "codebase", collectionId);
         await updateDoc(codeCollectionRef, {
-          star: val === 1 ? 0 : 1,
+          isDelete: false,
         });
+        await getUserCodebase();
         toast.update(id, {
-          render: `${val === 1 ? "Unstarred" : "Starred"} successfully!`,
+          render: `Filen Restored successfully!`,
           type: "success",
           isLoading: false,
           autoClose: 1000,
         });
-        await getUserCodebase();
+        close();
       } catch {
         toast.update(id, {
           render: "Oops! Something went wrong. Please try again..",
@@ -79,30 +52,22 @@ function PlaygroundTable({
           autoClose: 1000,
         });
       }
-      starButtonRef.current.disabled = false;
+      restoreButtonRef.current.disabled = false;
     }
   }
 
   if (userCodeBaseData.length === 0) {
     return (
       <main className="w-full h-full flex flex-col justify-center items-center gap-7 pb-16">
-        <svg
-          className="animate-slow-bounce"
-          xmlns="http://www.w3.org/2000/svg"
-          height="100px"
-          viewBox="0 -960 960 960"
-          width="100px"
-          fill="#e8eaed"
-        >
-          <path d="M480-120q-151 0-255.5-46.5T120-280v-400q0-66 105.5-113T480-840q149 0 254.5 47T840-680v400q0 67-104.5 113.5T480-120Zm0-488q86 0 176.5-26.5T773-694q-27-32-117.5-59T480-780q-88 0-177 26t-117 60q28 35 116 60.5T480-608Zm-1 214q42 0 84-4.5t80.5-13.5q38.5-9 73.5-22t63-29v-155q-29 16-64 29t-74 22q-39 9-80 14t-83 5q-42 0-84-5t-80.5-14q-38.5-9-73-22T180-618v155q27 16 61 29t72.5 22q38.5 9 80.5 13.5t85 4.5Zm1 214q48 0 99-8.5t93.5-22.5q42.5-14 72-31t35.5-35v-125q-28 16-63 28.5T643.5-352q-38.5 9-80 13.5T479-334q-43 0-85-4.5T313.5-352q-38.5-9-72.5-21.5T180-402v126q5 17 34 34.5t72 31q43 13.5 94 22t100 8.5Z" />
-        </svg>
+        <h1 className="font-sans text-9xl mb-3 text text-white animate-slow-bounce">
+          {"(;-;)"}
+        </h1>
         <h1 className="font-sans font-bold text-xl text text-white">
-          Your playground is currently empty. Start building something awesome!
-          🔥
+          Nothing in the bin.
         </h1>
         <button
           className="bg-blueBtn flex items-center bg-blue-500 text-white p-2 rounded-md shadow gap-3"
-          onClick={() => setCreateNewModal(true)}
+          onClick={() => router.back()}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -111,9 +76,9 @@ function PlaygroundTable({
             width="24px"
             fill="#FFFFFF"
           >
-            <path d="M440-280h80v-160h160v-80H520v-160h-80v160H280v80h160v160Zm40 200q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z" />
+            <path d="M182-200q-51 0-79-35.5T82-322l42-300q9-60 53.5-99T282-760h396q60 0 104.5 39t53.5 99l42 300q7 51-21 86.5T778-200q-21 0-39-7.5T706-230l-90-90H344l-90 90q-15 15-33 22.5t-39 7.5Zm16-86 114-114h336l114 114q2 2 16 6 11 0 17.5-6.5T800-304l-44-308q-4-29-26-48.5T678-680H282q-30 0-52 19.5T204-612l-44 308q-2 11 4.5 17.5T182-280q2 0 16-6Zm482-154q17 0 28.5-11.5T720-480q0-17-11.5-28.5T680-520q-17 0-28.5 11.5T640-480q0 17 11.5 28.5T680-440Zm-80-120q17 0 28.5-11.5T640-600q0-17-11.5-28.5T600-640q-17 0-28.5 11.5T560-600q0 17 11.5 28.5T600-560ZM310-440h60v-70h70v-60h-70v-70h-60v70h-70v60h70v70Zm170-40Z" />
           </svg>
-          Create Playground!
+          Go to Playground!
         </button>
       </main>
     );
@@ -138,7 +103,7 @@ function PlaygroundTable({
         </tr>
       </thead>
       <tbody>
-        {userCodeBaseData.map((val) => {
+        {filterData.map((val) => {
           return (
             <tr
               className="border-b border-borderColor text-white hover:cursor-pointer"
@@ -187,86 +152,35 @@ function PlaygroundTable({
               </td>
               <td className="px-1 py-4 flex gap-4">
                 <button
+                  ref={restoreButtonRef}
                   className="focus:outline-none"
-                  onClick={(e) => {
+                  onClick={async (e) => {
                     e.stopPropagation();
-                    setShareModal({
-                      collectionId: val.id,
-                      prevShare: val.share,
-                    });
+                    await restoreColeection(val.id);
                   }}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    height="20px"
+                    height="30px"
                     viewBox="0 -960 960 960"
-                    width="20px"
+                    width="30px"
                     fill="#FFFFFF"
                   >
-                    <path d="M680-80q-50 0-85-35t-35-85q0-6 3-28L282-392q-16 15-37 23.5t-45 8.5q-50 0-85-35t-35-85q0-50 35-85t85-35q24 0 45 8.5t37 23.5l281-164q-2-7-2.5-13.5T560-760q0-50 35-85t85-35q50 0 85 35t35 85q0 50-35 85t-85 35q-24 0-45-8.5T598-672L317-508q2 7 2.5 13.5t.5 14.5q0 8-.5 14.5T317-452l281 164q16-15 37-23.5t45-8.5q50 0 85 35t35 85q0 50-35 85t-85 35Zm0-80q17 0 28.5-11.5T720-200q0-17-11.5-28.5T680-240q-17 0-28.5 11.5T640-200q0 17 11.5 28.5T680-160ZM200-440q17 0 28.5-11.5T240-480q0-17-11.5-28.5T200-520q-17 0-28.5 11.5T160-480q0 17 11.5 28.5T200-440Zm480-280q17 0 28.5-11.5T720-760q0-17-11.5-28.5T680-800q-17 0-28.5 11.5T640-760q0 17 11.5 28.5T680-720Zm0 520ZM200-480Zm480-280Z" />
+                    <path d="M440-320h80v-166l64 62 56-56-160-160-160 160 56 56 64-62v166ZM280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520Zm-400 0v520-520Z" />
                   </svg>{" "}
                 </button>
                 <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    saveFile(val.code, val.fileName, val.language);
-                  }}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    height="24px"
-                    viewBox="0 -960 960 960"
-                    width="24px"
-                    fill="#FFFFFF"
-                  >
-                    <path d="M480-320 280-520l56-58 104 104v-326h80v326l104-104 56 58-200 200ZM240-160q-33 0-56.5-23.5T160-240v-120h80v120h480v-120h80v120q0 33-23.5 56.5T720-160H240Z" />
-                  </svg>
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setRenameModal({
-                      prevTitle: val.fileName,
-                      collectionId: val.id,
-                    });
-                  }}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    height="24px"
-                    viewBox="0 -960 960 960"
-                    width="24px"
-                    fill="#FFFFFF"
-                  >
-                    <path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z" />
-                  </svg>
-                </button>
-                <button
-                  ref={starButtonRef}
-                  onClick={(e) => updateStar(e, val.star, val.id)}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    height="24px"
-                    viewBox="0 -960 960 960"
-                    width="24px"
-                    fill={val.star === 1 ? "#FDCC0D" : "#FFFFFF"}
-                  >
-                    <path d="m354-287 126-76 126 77-33-144 111-96-146-13-58-136-58 135-146 13 111 97-33 143ZM233-120l65-281L80-590l288-25 112-265 112 265 288 25-218 189 65 281-247-149-247 149Zm247-350Z" />
-                  </svg>
-                </button>
-                <button
                   className="focus:outline-none"
                   onClick={(e) => {
                     e.stopPropagation();
-                    setDeleteModal(val.id);
+                    setConfirmDeleteModal({ id: val.id, name: val.fileName });
                   }}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    height="24px"
+                    height="30px"
                     viewBox="0 -960 960 960"
-                    width="24px"
+                    width="30px"
                     fill="#FFFFFF"
                   >
                     <path d="m376-300 104-104 104 104 56-56-104-104 104-104-56-56-104 104-104-104-56 56 104 104-104 104 56 56Zm-96 180q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520Zm-400 0v520-520Z" />
@@ -281,4 +195,4 @@ function PlaygroundTable({
   );
 }
 
-export default PlaygroundTable;
+export default DeletedTable;

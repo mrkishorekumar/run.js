@@ -1,5 +1,6 @@
 import { useAuth } from "@/components/AuthProvider";
 import CreateNewPlayground from "@/components/CreateNewPlayground";
+import DeleteModal from "@/components/DeleteModal";
 import Loading from "@/components/Loading";
 import PlaygroundHeader from "@/components/PlaygroundHeader";
 import PlaygroundTable from "@/components/PlaygroundTable";
@@ -10,6 +11,7 @@ import { codeCollectionRef } from "@/firebase";
 import { debounce } from "@/utils/commonFunction";
 import firebase from "firebase/compat/app";
 import { getDocs, orderBy, query, where } from "firebase/firestore";
+import { useRouter } from "next/router";
 import React, { useCallback, useEffect, useState } from "react";
 import { Bounce, toast, ToastContainer } from "react-toastify";
 
@@ -27,6 +29,7 @@ export interface UserCodeBase {
 }
 
 function Playgrounds() {
+  const router = useRouter();
   const [renameModal, setRenameModal] = useState({
     prevTitle: "",
     collectionId: "",
@@ -39,6 +42,7 @@ function Playgrounds() {
     collectionId: "",
   });
   const [createNewModal, setCreateNewModal] = useState(false);
+  const [deleteModal, setDeleteModal] = useState("");
   const [userCodeBaseData, setUserCodeBaseData] = useState<UserCodeBase[]>([]);
   const [filterData, setFilterData] = useState<UserCodeBase[]>([]);
   const [loading, setLoading] = useState(false);
@@ -144,7 +148,7 @@ function Playgrounds() {
             <div className="flex gap-4">
               <button
                 className="bg-headerBg flex items-center bg-blue-500 text-white p-2 rounded-md shadow gap-3"
-                onClick={() => {}}
+                onClick={() => router.push("bin")}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -184,6 +188,7 @@ function Playgrounds() {
             userCodeBaseData={filterData}
             getUserCodebase={getUserCodebase}
             setCreateNewModal={setCreateNewModal}
+            setDeleteModal={setDeleteModal}
           />
         </section>
       </main>
@@ -202,6 +207,11 @@ function Playgrounds() {
       <CreateNewPlayground
         close={() => setCreateNewModal(false)}
         isModalOpen={createNewModal}
+      />
+      <DeleteModal
+        close={() => setDeleteModal("")}
+        isModalOpen={deleteModal}
+        getUserCodebase={getUserCodebase}
       />
       <ToastContainer
         position="top-right"
