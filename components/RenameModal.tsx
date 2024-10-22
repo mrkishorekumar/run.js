@@ -104,6 +104,7 @@ function RenameModal({
             value={fileName}
             onChange={(e) => setFileName(e.target.value)}
             type="text"
+            required
           />
           <input
             maxLength={50}
