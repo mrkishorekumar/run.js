@@ -10,6 +10,7 @@ interface PlaygroundTableProp {
     React.SetStateAction<{
       prevTitle: string;
       collectionId: string;
+      tag: string;
     }>
   >;
   setShareModal: React.Dispatch<
@@ -202,9 +203,9 @@ function PlaygroundTable({
               <td className="px-6 py-4">
                 {val?.lastModifiedAt.toDate().toLocaleString()}
               </td>
-              <td className="px-1 py-4 flex gap-4">
+              <td className="py-2 flex gap-2">
                 <button
-                  className="focus:outline-none"
+                  className="focus:outline-none p-2"
                   onClick={(e) => {
                     e.stopPropagation();
                     setShareModal({
@@ -224,6 +225,7 @@ function PlaygroundTable({
                   </svg>{" "}
                 </button>
                 <button
+                  className="p-2"
                   onClick={(e) => {
                     e.stopPropagation();
                     saveFile(val.code, val.fileName, val.language);
@@ -240,11 +242,13 @@ function PlaygroundTable({
                   </svg>
                 </button>
                 <button
+                  className="p-2"
                   onClick={(e) => {
                     e.stopPropagation();
                     setRenameModal({
                       prevTitle: val.fileName,
                       collectionId: val.id,
+                      tag: val.tag,
                     });
                   }}
                 >
@@ -259,6 +263,7 @@ function PlaygroundTable({
                   </svg>
                 </button>
                 <button
+                  className="p-2"
                   ref={starButtonRef}
                   onClick={(e) => updateStar(e, val.star, val.id)}
                 >
@@ -273,7 +278,7 @@ function PlaygroundTable({
                   </svg>
                 </button>
                 <button
-                  className="focus:outline-none"
+                  className="focus:outline-none p-2"
                   onClick={(e) => {
                     e.stopPropagation();
                     setDeleteModal(val.id);

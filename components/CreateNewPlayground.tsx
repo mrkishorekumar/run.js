@@ -13,6 +13,7 @@ interface CreateNewPlaygroundProps {
 
 function CreateNewPlayground({ isModalOpen, close }: CreateNewPlaygroundProps) {
   const [fileName, setFileName] = useState("");
+  const [tagName, setTag] = useState("");
   const [loading, setLoading] = useState(false);
   const [lang, setLang] = useState<"js" | "ts">("js");
   const { user } = useAuth();
@@ -40,11 +41,12 @@ function CreateNewPlayground({ isModalOpen, close }: CreateNewPlaygroundProps) {
       if (user?.uid) {
         const Payload: Codebase = {
           ...MASTER_DATA,
-          fileName: fileName,
+          fileName: fileName.trim(),
           language: lang,
           userId: user?.uid,
           createdAt: serverTimestamp(),
           lastModifiedAt: serverTimestamp(),
+          tag: tagName.trim(),
         };
         const docRef = await addDoc(codeCollectionRef, Payload);
         toast.update(id, {
@@ -94,6 +96,14 @@ function CreateNewPlayground({ isModalOpen, close }: CreateNewPlaygroundProps) {
             onChange={(e) => setFileName(e.target.value)}
             type="text"
             required
+          />
+          <input
+            maxLength={50}
+            placeholder="tag (optional)"
+            className="bg-modalBg border focus:outline-none rounded p-2 mt-3"
+            value={tagName}
+            onChange={(e) => setTag(e.target.value.toLocaleLowerCase())}
+            type="text"
           />
           <div className="flex gap-3 mt-3 justify-center">
             <button

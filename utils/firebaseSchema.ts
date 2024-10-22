@@ -10,6 +10,7 @@ export interface Codebase {
   share: 0 | 1;
   star: 0 | 1;
   userId: string;
+  tag: string;
 }
 
 export const MASTER_DATA: Codebase = {
@@ -22,4 +23,5 @@ export const MASTER_DATA: Codebase = {
   share: 0,
   star: 0,
   userId: "",
+  tag: "",
 };

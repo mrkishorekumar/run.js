@@ -9,6 +9,7 @@ interface RenameModalProps {
   info: {
     prevTitle: string;
     collectionId: string;
+    tag: string;
   };
   getUserCodebase: () => Promise<void>;
 }
@@ -20,7 +21,16 @@ function RenameModal({
   getUserCodebase,
 }: RenameModalProps) {
   const [fileName, setFileName] = useState("");
+  const [tagName, setTag] = useState("");
   const submitButtonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    setFileName(info.prevTitle);
+  }, [info.prevTitle]);
+
+  useEffect(() => {
+    setTag(info.tag);
+  }, [info.tag]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -43,9 +53,16 @@ function RenameModal({
       const id = toast.loading("Connecting you to Cloud, hold tight...");
       try {
         const codeCollectionRef = doc(db, "codebase", info.collectionId);
-        await updateDoc(codeCollectionRef, {
-          fileName: fileName,
-        });
+        const payload: { fileName?: string; tag?: string } = {};
+        if (
+          !(info.prevTitle.toLocaleLowerCase() === fileName.toLocaleLowerCase())
+        ) {
+          payload.fileName = fileName.trim();
+        }
+        if (!(info.tag.toLocaleLowerCase() === tagName.toLocaleLowerCase())) {
+          payload.tag = tagName.trim();
+        }
+        await updateDoc(codeCollectionRef, payload);
         await getUserCodebase();
         toast.update(id, {
           render: `Filename was renamed successfully!`,
@@ -87,7 +104,14 @@ function RenameModal({
             value={fileName}
             onChange={(e) => setFileName(e.target.value)}
             type="text"
-            required
+          />
+          <input
+            maxLength={50}
+            placeholder="New Tag"
+            className="bg-modalBg border focus:outline-none rounded p-2 mt-3"
+            value={tagName}
+            onChange={(e) => setTag(e.target.value.toLocaleLowerCase())}
+            type="text"
           />
           <div className="flex justify-end gap-5 mt-5">
             <button

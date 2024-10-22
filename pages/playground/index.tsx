@@ -26,6 +26,7 @@ export interface UserCodeBase {
   share: 0 | 1;
   star: 0 | 1;
   userId: string;
+  tag: string;
 }
 
 function Playgrounds() {
@@ -33,6 +34,7 @@ function Playgrounds() {
   const [renameModal, setRenameModal] = useState({
     prevTitle: "",
     collectionId: "",
+    tag: "",
   });
   const [shareModal, setShareModal] = useState<{
     prevShare: 0 | 1;
@@ -54,6 +56,7 @@ function Playgrounds() {
     const searchResult = userCodeBaseData.filter(
       (val) =>
         val.fileName.toLowerCase().includes(lowerCaseSearchTerm) ||
+        val.tag?.toLowerCase().includes(lowerCaseSearchTerm) ||
         val.language.includes(lowerCaseSearchTerm),
     );
 
@@ -140,7 +143,7 @@ function Playgrounds() {
               </svg>
               <input
                 type="text"
-                placeholder="Search files"
+                placeholder="Search with Filename, js/ts or Tag name."
                 className="w-full bg-transparent outline-none ml-3 text-white"
                 onChange={(e) => debouncedFilterSearchTerm(e.target.value)}
               />
@@ -195,7 +198,9 @@ function Playgrounds() {
       <RenameModal
         isModalOpen={renameModal.prevTitle.length > 0}
         info={renameModal}
-        close={() => setRenameModal({ prevTitle: "", collectionId: "" })}
+        close={() =>
+          setRenameModal({ prevTitle: "", collectionId: "", tag: "" })
+        }
         getUserCodebase={getUserCodebase}
       />
       <SharePlaygroundModal
