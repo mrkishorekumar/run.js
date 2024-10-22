@@ -43,7 +43,6 @@ function DeletedTable({
           isLoading: false,
           autoClose: 1000,
         });
-        close();
       } catch {
         toast.update(id, {
           render: "Oops! Something went wrong. Please try again..",
