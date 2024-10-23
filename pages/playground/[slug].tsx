@@ -39,7 +39,7 @@ function Playground() {
   const [fontSize, setFontSize] = useLocalStorageState("font", 16);
   /* eslint-disable  @typescript-eslint/no-explicit-any */
   const [logs, setLogs] = useState<Message[] | any[]>([]);
-  const [fullScreen, setFullScreen] = useState(false);
+  const [fullScreen, setFullScreen] = useState(true);
   const [lang, setLang] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [consoleFilter, setConsoleFilter] = useState("");

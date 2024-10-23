@@ -4,6 +4,7 @@ import React, { FormEvent, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 
 interface RenameModalProps {
+  tagSuggestions: string[];
   isModalOpen: boolean;
   close: () => void;
   info: {
@@ -19,7 +20,9 @@ function RenameModal({
   close,
   info,
   getUserCodebase,
+  tagSuggestions,
 }: RenameModalProps) {
+  const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
   const [fileName, setFileName] = useState("");
   const [tagName, setTag] = useState("");
   const submitButtonRef = useRef<HTMLButtonElement>(null);
@@ -83,6 +86,22 @@ function RenameModal({
     }
   }
 
+  function handleInputChange(term: string) {
+    if (term) {
+      const filtered = tagSuggestions.filter((suggestion) =>
+        suggestion.toLowerCase().includes(term.toLowerCase()),
+      );
+      setFilteredSuggestions(filtered);
+    } else {
+      setFilteredSuggestions([]);
+    }
+  }
+
+  const handleSuggestionClick = (suggestion: string) => {
+    setTag(suggestion);
+    setFilteredSuggestions([]);
+  };
+
   if (!isModalOpen) return null;
 
   return (
@@ -106,14 +125,32 @@ function RenameModal({
             type="text"
             required
           />
-          <input
-            maxLength={50}
-            placeholder="New Tag"
-            className="bg-modalBg border focus:outline-none rounded p-2 mt-3"
-            value={tagName}
-            onChange={(e) => setTag(e.target.value.toLocaleLowerCase())}
-            type="text"
-          />
+          <div className="relative">
+            <input
+              maxLength={50}
+              placeholder="tag (optional)"
+              className="bg-modalBg border focus:outline-none rounded p-2 mt-3 w-full"
+              value={tagName}
+              onChange={(e) => {
+                setTag(e.target.value.toLocaleLowerCase());
+                handleInputChange(e.target.value.toLocaleLowerCase());
+              }}
+              type="text"
+            />
+            {filteredSuggestions.length > 0 && (
+              <ul className="absolute w-full mt-1 bg-modalBg border rounded shadow-lg overflow-y-auto">
+                {filteredSuggestions.map((suggestion, index) => (
+                  <li
+                    key={index}
+                    onClick={() => handleSuggestionClick(suggestion)}
+                    className="px-4 py-2 cursor-pointer text-white"
+                  >
+                    {suggestion}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
           <div className="flex justify-end gap-5 mt-5">
             <button
               className="bg-red-500 text-white py-2 px-3 rounded"

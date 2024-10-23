@@ -47,6 +47,7 @@ function Playgrounds() {
   const [deleteModal, setDeleteModal] = useState("");
   const [userCodeBaseData, setUserCodeBaseData] = useState<UserCodeBase[]>([]);
   const [filterData, setFilterData] = useState<UserCodeBase[]>([]);
+  const [tagSuggestions, setTagSuggestions] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
 
@@ -78,7 +79,11 @@ function Playgrounds() {
       const result: UserCodeBase[] = data.docs.map((doc: any) => {
         return { ...doc.data(), id: doc.id };
       });
-
+      const tags: string[] = [];
+      result.filter((val) => {
+        if (val.tag.length > 0) tags.push(val.tag);
+      });
+      setTagSuggestions(tags);
       setUserCodeBaseData(result);
       setFilterData(result);
 
@@ -196,6 +201,7 @@ function Playgrounds() {
         </section>
       </main>
       <RenameModal
+        tagSuggestions={tagSuggestions}
         isModalOpen={renameModal.prevTitle.length > 0}
         info={renameModal}
         close={() =>
@@ -210,6 +216,7 @@ function Playgrounds() {
         getUserCodebase={getUserCodebase}
       />
       <CreateNewPlayground
+        tagSuggestions={tagSuggestions}
         close={() => setCreateNewModal(false)}
         isModalOpen={createNewModal}
       />

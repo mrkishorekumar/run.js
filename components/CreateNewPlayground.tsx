@@ -9,12 +9,18 @@ import { codeCollectionRef } from "@/firebase";
 interface CreateNewPlaygroundProps {
   isModalOpen: boolean;
   close: () => void;
+  tagSuggestions: string[];
 }
 
-function CreateNewPlayground({ isModalOpen, close }: CreateNewPlaygroundProps) {
+function CreateNewPlayground({
+  isModalOpen,
+  close,
+  tagSuggestions,
+}: CreateNewPlaygroundProps) {
   const [fileName, setFileName] = useState("");
   const [tagName, setTag] = useState("");
   const [loading, setLoading] = useState(false);
+  const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
   const [lang, setLang] = useState<"js" | "ts">("js");
   const { user } = useAuth();
   const router = useRouter();
@@ -71,6 +77,22 @@ function CreateNewPlayground({ isModalOpen, close }: CreateNewPlaygroundProps) {
     setLoading(false);
   }
 
+  function handleInputChange(term: string) {
+    if (term) {
+      const filtered = tagSuggestions.filter((suggestion) =>
+        suggestion.toLowerCase().includes(term.toLowerCase()),
+      );
+      setFilteredSuggestions(filtered);
+    } else {
+      setFilteredSuggestions([]);
+    }
+  }
+
+  const handleSuggestionClick = (suggestion: string) => {
+    setTag(suggestion);
+    setFilteredSuggestions([]);
+  };
+
   if (!isModalOpen) return null;
 
   return (
@@ -97,14 +119,32 @@ function CreateNewPlayground({ isModalOpen, close }: CreateNewPlaygroundProps) {
             type="text"
             required
           />
-          <input
-            maxLength={50}
-            placeholder="tag (optional)"
-            className="bg-modalBg border focus:outline-none rounded p-2 mt-3"
-            value={tagName}
-            onChange={(e) => setTag(e.target.value.toLocaleLowerCase())}
-            type="text"
-          />
+          <div className="relative">
+            <input
+              maxLength={50}
+              placeholder="tag (optional)"
+              className="bg-modalBg border focus:outline-none rounded p-2 mt-3 w-full"
+              value={tagName}
+              onChange={(e) => {
+                setTag(e.target.value.toLocaleLowerCase());
+                handleInputChange(e.target.value.toLocaleLowerCase());
+              }}
+              type="text"
+            />
+            {filteredSuggestions.length > 0 && (
+              <ul className="absolute w-full mt-1 bg-modalBg border rounded shadow-lg overflow-y-auto">
+                {filteredSuggestions.map((suggestion, index) => (
+                  <li
+                    key={index}
+                    onClick={() => handleSuggestionClick(suggestion)}
+                    className="px-4 py-2 cursor-pointer text-white"
+                  >
+                    {suggestion}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
           <div className="flex gap-3 mt-3 justify-center">
             <button
               className={`bg-transparent p-1 border ${lang === "js" ? "border-white" : "border-borderColor"} rounded`}
