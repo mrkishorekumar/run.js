@@ -157,7 +157,7 @@ function Playgrounds() {
         </p>
         {userCodeBaseData.length > 0 ? (
           <>
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between mb-2">
               <div className="flex items-center w-1/2 bg-headerBg p-2 rounded-md shadow">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
