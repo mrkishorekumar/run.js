@@ -113,7 +113,7 @@ function Mybin() {
               </svg>
               <input
                 type="text"
-                placeholder="Search files"
+                placeholder="Search with Filename, js/ts or Tag name."
                 className="w-full bg-transparent outline-none ml-3 text-white"
                 onChange={(e) => debouncedFilterSearchTerm(e.target.value)}
               />

@@ -56,3 +56,13 @@
 .animate-slow-bounce {
   animation: slow-bounce 1.5s ease-in-out infinite; /* 2 seconds duration */
 }
+
+/* Hide scrollbar in all modern browsers */
+.no-scrollbar::-webkit-scrollbar {
+  display: none; /* Safari and Chrome */
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
